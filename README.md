@@ -1,7 +1,7 @@
 # Tea-Coffee
 Tea-Coffee online sale app
 
-In the project directory, you can below command, it will install all the necessary node modules in your repo:
+In the project directory, run below command, it will install all the necessary node modules in your repo:
 
 ### `npm install`
 
