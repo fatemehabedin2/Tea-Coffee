@@ -14,7 +14,10 @@ var HTTP_PORT = process.env.PORT || 8080;
 require("dotenv").config();
 
 function OnHttpStart() {
-  console.log("Express server started on port: " + HTTP_PORT);
+  console.log("****************************************");
+  console.log("Express server started successfully");
+  console.log("Link: http://localhost:" + HTTP_PORT);
+  console.log("****************************************");
 }
 
 app.use(express.static("views"));
