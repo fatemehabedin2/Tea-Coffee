@@ -48,6 +48,9 @@ app.get("/about", (req, res) => {
 app.get("/contact", (req, res) => {
   res.render("contact", { layout: false });
 });
+app.get("/register", (req,res) => {
+  res.render("register", {layout: false}) });
+});
 
 //#endregion
 
@@ -55,15 +58,19 @@ app.get("/contact", (req, res) => {
 app.get("/login", (req, res) => {
     res.render("login", { layout: false });
   });
-  app.get("/logout", (req, res) => {
+app.get("/logout", (req, res) => {
       //todo logout stuff
     res.redirect("/")
+  });
+app.get("/forgotpassword", (req,res) => {
+   res.render("forgotpassword", {layout: false});
   });
 //#endregion
 
 //#region AuthorizedUsers
-/*
- */
+app.get("/profile", (req,res) => {
+   res.render("profile", {layout: false})
+  });
 //#endregion AdminPages
 
 //#region AdminPages
