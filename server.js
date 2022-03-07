@@ -48,12 +48,9 @@ app.get("/about", (req, res) => {
 app.get("/contact", (req, res) => {
   res.render("contact", { layout: false });
 });
-app.get("/register", (req,res) => {
-  res.render("register", {layout: false });
-});
 
-app.get("/register", (req, res) => {
-  res.render("register", { layout: false });
+app.get("/register", (req,res) => {
+  res.render("registration", {layout: false });
 });
 
 //#endregion
