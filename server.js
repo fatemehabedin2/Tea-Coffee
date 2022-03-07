@@ -49,6 +49,10 @@ app.get("/contact", (req, res) => {
   res.render("contact", { layout: false });
 });
 
+app.get("/register", (req, res) => {
+  res.render("register", { layout: false });
+});
+
 //#endregion
 
 //#region Authentication
@@ -59,16 +63,38 @@ app.get("/login", (req, res) => {
       //todo logout stuff
     res.redirect("/")
   });
+  app.get("/forgotpassword", (req,res) => {
+    res.render("forgotpassword", {layout: false});
+   });
+  
 //#endregion
 
 //#region AuthorizedUsers
-/*
- */
+app.get("/dashboarduser", (req, res) => {
+  res.render("dashboardUser", { layout: false });
+});
+app.get("/profile", (req,res) => {
+  res.render("profile", {layout: false})
+ });
 //#endregion AdminPages
 
 //#region AdminPages
-/*
- */
+app.get("/createproduct", (req, res) => {
+  res.render("createProduct", { layout: false });
+});
+app.get("/updateproduct", (req, res) => {
+  res.render("updateProduct", { layout: false });
+});
+app.get("/deleteproduct", (req, res) => {
+  res.render("deleteProduct", { layout: false });
+});
+app.get("/dashboardadmin", (req, res) => {
+  res.render("dashboardAdmin", { layout: false });
+});
+
+app.get("/productindatabase", (req, res) => {
+  res.render("productInDB", { layout: false });
+});
 //#endregion
 
 //#region Custom Functions and Startup
