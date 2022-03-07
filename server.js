@@ -65,9 +65,9 @@ app.get("/logout", (req, res) => {
   });
   app.get("/forgotpassword", (req,res) => {
     res.render("forgotpassword", {layout: false});
-   });
-  
-//#endregion
+   });  
+
+   //#endregion
 
 //#region AuthorizedUsers
 app.get("/dashboarduser", (req, res) => {
@@ -95,6 +95,12 @@ app.get("/dashboardadmin", (req, res) => {
 app.get("/productindatabase", (req, res) => {
   res.render("productInDB", { layout: false });
 });
+//#endregion
+
+//#region Products
+app.get("/allProducts", (req, res) => {
+  res.render("productListing", { layout: false });
+}); 
 //#endregion
 
 //#region Custom Functions and Startup
