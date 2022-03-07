@@ -48,6 +48,9 @@ app.get("/about", (req, res) => {
 app.get("/contact", (req, res) => {
   res.render("contact", { layout: false });
 });
+app.get("/register", (req,res) => {
+  res.render("register", {layout: false });
+});
 
 app.get("/register", (req, res) => {
   res.render("register", { layout: false });
@@ -59,7 +62,7 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
     res.render("login", { layout: false });
   });
-  app.get("/logout", (req, res) => {
+app.get("/logout", (req, res) => {
       //todo logout stuff
     res.redirect("/")
   });
