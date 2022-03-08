@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Product Title</title>
+		{{!-- all meta tags and common link tags --}}
+		{{>headMetaTags}}
+	</head>
+	<body>
+		{{!-- header --}}
+		{{>header}}
+
+		{{!-- div between header and footer--}}
+		<div id="mid-wrap">
+			{{!-- all your content goes here --}}
+			<div class="container">
+                <div class="row">
+                    <div class="col-md-5 text-center">
+                        <img src="../images/product_listing/1.jpg" alt="product" class="img-fluid"/>
+                    </div>
+
+                    <div class="col-md-7 mt-2">
+                        <div class="product-content">
+                            <h4 class="display-4">Product title</h4>
+                            <p class="card-text display-6">short product description</p>
+                            <p class="card-text product-price">$10.99</p>
+                            <form class="form-inline row px-2">
+                                <div class="col-6">
+                                    <label class="" for="size">Size</label>
+                                    <input type="text" class="form-control mb-2 mr-sm-2" id="size" placeholder="1 lbs">
+                                </div>
+
+                                <div class="col-6">
+                                    <label class="" for="qty">Quantity</label>
+                                    <input type="text" class="form-control mb-2 mr-sm-2" id="qty" placeholder="1">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary mt-4 mb-2">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{>relatedProducts}}
+		</div>
+
+		{{!-- footer --}}
+		{{>footer}}
+
+		{{!-- scripts --}}
+		{{>footerScripts}}
+	</body>
+</html>
