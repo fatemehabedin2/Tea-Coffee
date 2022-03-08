@@ -98,7 +98,7 @@ app.get("/productindatabase", (req, res) => {
 //#endregion
 
 //#region Products
-app.get("/allProducts", (req, res) => {
+app.get("/products", (req, res) => {
   res.render("productListing", { layout: false });
 }); 
 //#endregion
