@@ -101,6 +101,16 @@ app.get("/productindatabase", (req, res) => {
 app.get("/products", (req, res) => {
   res.render("productListing", { layout: false });
 }); 
+
+app.get("/products/1", (req, res) => {
+  res.render("productDetail", { layout: false });
+});
+
+app.get("/search", (req, res) => {
+  res.render("productSearch", { layout: false });
+});
+
+
 //#endregion
 
 //#region Custom Functions and Startup
