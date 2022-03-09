@@ -15,10 +15,7 @@
 
     {{!-- all your content goes here --}}
     <div class="container">
-
-
         <div class="container-lg my-5">
-
             <div>
                 <div class=" border border-success rounded-3">
                     <div class="p-5">
@@ -26,13 +23,15 @@
                             <h2> Shipping Address </h2>
                         </div>
                         <form class="row g-3">
+
                             <div class="col-md-6">
-                                <label for="inputEmail4" class="form-label">First Name</label>
-                                <input type="email" class="form-control" id="inputEmail4" required />
+                                <label for="inputEmail" class="form-label">First Name</label>
+                                <input type="email" class="form-control" id="inputEmail" required />
                             </div>
+
                             <div class="col-md-6">
-                                <label for="inputPassword4" class="form-label">Last Name</label>
-                                <input type="password" class="form-control" id="inputPassword4" />
+                                <label for="inputPassword" class="form-label">Last Name</label>
+                                <input type="password" class="form-control" id="inputPassword" />
                             </div>
                             <div class="col-6">
                                 <label for="inputAddress" class="form-label">Address1</label>
@@ -67,20 +66,20 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <a href="/checkout" class="btn btn-success float-right">Add address</a>
+                                <a href="/checkout" class="btn btn-primary float-right">Add address</a>
                             </div>
                         </form>
-                        <br> <br>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        {{!-- footer --}}
-        {{>footer}}
+    {{!-- footer --}}
+    {{>footer}}
 
-        {{!-- scripts --}}
-        {{>footerScripts}}
+    {{!-- scripts --}}
+    {{>footerScripts}}
 </body>
 
 </html>

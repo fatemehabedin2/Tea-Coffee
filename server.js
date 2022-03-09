@@ -56,6 +56,8 @@ app.get("/register", (req, res) => {
 app.get("/shoppingCart", (req, res) => {
   res.render("shoppingCart", { layout: false });
 });
+
+
 //#endregion
 
 //#region Authentication
@@ -97,6 +99,10 @@ app.get("/confirmOrder", (req, res) => {
 app.get("/checkout", (req, res) => {
   res.render("checkout", { layout: false });
 });
+
+app.get("/editProfile", (req, res) => {
+  res.render("editProfile", { layout: false })
+});
 //#endregion AdminPages
 
 //#region AdminPages
@@ -133,6 +139,10 @@ app.get("/search", (req, res) => {
 
 
 //#endregion
+
+app.use("*", (req, res) => {
+  res.render("pageNotFound", { layout: false });
+});
 
 //#region Custom Functions and Startup
 app.listen(HTTP_PORT, OnHttpStart);
