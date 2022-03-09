@@ -97,12 +97,13 @@ button.btn.btn-warning:hover{
   left: 0;
   height: 100%;
   width: 100%;
-  background-color: rgba(15, 15, 15, 0.534);
+  background-color: rgba(15, 15, 15, 0.171);
   z-index: -1;
 }
 #hero-section-2 h4 {
-  font-size: 2.2rem;
+  font-size: 3rem;
   height: 100%;
+  text-align: center;
 }
 #hero-section-2 div {
   height: 100%;
