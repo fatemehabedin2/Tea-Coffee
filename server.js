@@ -97,6 +97,10 @@ app.get("/confirmOrder", (req, res) => {
 app.get("/checkout", (req, res) => {
   res.render("checkout", { layout: false });
 });
+
+app.get("/editProfile", (req,res) => {
+  res.render("editProfile", {layout: false}) 
+});
 //#endregion AdminPages
 
 //#region AdminPages
