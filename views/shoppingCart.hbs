@@ -23,7 +23,7 @@
     <div class="container">
 
 
-        <div class=" border border-dark rounded-3">
+        <div class=" border border-success rounded-3">
             <table class="table">
                 <thead>
                     <tr>
@@ -49,7 +49,12 @@
                         <td>
                             <input type="number" style="width: 70px;" min="1" name="qnt[]" value=1 />
                         </td>
-                        <td><a href="/delete">Delete</a></td>
+                        <td>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                                Delete
+                            </button>
+                        </td>
                     </tr>
 
                     <tr>
@@ -66,7 +71,12 @@
                         <td>
                             <input type="number" style="width: 70px;" min="1" name="qnt[]" value=1 />
                         </td>
-                        <td><a href="/delete">Delete</a></td>
+                        <td>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                                Delete
+                            </button>
+                        </td>
                     </tr>
 
                     <tr>
@@ -83,7 +93,12 @@
                         <td>
                             <input type="number" style="width: 70px;" min="1" name="qnt[]" value=1 />
                         </td>
-                        <td><a href="/delete">Delete</a></td>
+                        <td>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                                Delete
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -91,10 +106,31 @@
         </div>
         <div class="clearfix"></div>
         <br>
-        <a href="/shippingDetail" class="btn btn-success float-right" style="justify-content: center;">Checkout</a>
+        <a href="/shippingDetail" class="btn btn-primary float-right" style="justify-content: center;">Checkout</a>
         <br><br>
         <div class="clearfix"></div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure to delete this product?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">NO</button>
+                    <button type="button" class="btn btn-primary">YES</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
     {{!-- footer --}}
     {{>footer}}
