@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Tea &amp; Coffee Online</title>
+    {{!-- all meta tags and common link tags --}}
+    {{>headMetaTags}}
+</head>
+
+<body>
+    {{!-- header --}}
+    {{>header}}
+
+    {{!-- div between header and footer--}}
+
+    {{!-- all your content goes here --}}
+    <br>
+    <div class="text-center">
+        <h3>Order History </h3>
+    </div>
+    <br>
+    <div class="container">
+
+        <div class=" border border-dark rounded-3" style="width: 100px; float:left; height:250px; margin-left: 200px;
+}">
+            <br>
+            <br>
+
+            <a class=" nav-link" href="http://localhost:8080/dashboardUser" style="color:green;">Dashboard</a><br>
+            <a class="nav-link" href="http://localhost:8080/profile" style="color:green;">Profile</a><br>
+            <a class="nav-link" href="http://localhost:8080/logout" style="color:green;">Logout</a><br>
+        </div>
+
+        <div class=" border border-dark rounded-3" style="width: 600px; float:left; height:250px;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#958</td>
+                        <td>19 Jan 2022</td>
+                        <td>Completed</td>
+                        <td><a href="/view" style="color:green;">View</a></td>
+                    </tr>
+                    <tr>
+                        <td>#923</td>
+                        <td>05 Jan 2022</td>
+                        <td>Completed</td>
+                        <td><a href="/view" style="color:green;">View</a></td>
+                    </tr>
+                    <tr>
+                        <td>#647</td>
+                        <td>24 dec 2021</td>
+                        <td>Cancelled</td>
+                        <td><a href="/view" style="color:green;">View</a></td>
+                    </tr>
+                    <tr>
+                        <td>#602</td>
+                        <td>15 Dec 2021</td>
+                        <td>Completed</td>
+                        <td><a href="/view" style="color:green;">View</a></td>
+                    </tr>
+                    <tr>
+                        <td>#576</td>
+                        <td>21 Nov 2021</td>
+                        <td>Completed</td>
+                        <td><a href="/view" style="color:green;">View</a></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    {{!-- footer --}}
+    {{>footer}}
+
+    {{!-- scripts --}}
+    {{>footerScripts}}
+</body>
+
+</html>

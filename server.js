@@ -49,33 +49,54 @@ app.get("/contact", (req, res) => {
   res.render("contact", { layout: false });
 });
 
-app.get("/register", (req,res) => {
-  res.render("registration", {layout: false });
+app.get("/register", (req, res) => {
+  res.render("registration", { layout: false });
 });
 
+app.get("/shoppingCart", (req, res) => {
+  res.render("shoppingCart", { layout: false });
+});
 //#endregion
 
 //#region Authentication
 app.get("/login", (req, res) => {
-    res.render("login", { layout: false });
-  });
+  res.render("login", { layout: false });
+});
 app.get("/logout", (req, res) => {
-      //todo logout stuff
-    res.redirect("/")
-  });
-  app.get("/forgotpassword", (req,res) => {
-    res.render("forgotpassword", {layout: false});
-   });  
+  //todo logout stuff
+  res.redirect("/")
+});
+app.get("/forgotpassword", (req, res) => {
+  res.render("forgotpassword", { layout: false });
+});
 
-   //#endregion
+
+
+//#endregion
 
 //#region AuthorizedUsers
 app.get("/dashboarduser", (req, res) => {
   res.render("dashboardUser", { layout: false });
 });
-app.get("/profile", (req,res) => {
-  res.render("profile", {layout: false})
- });
+app.get("/profile", (req, res) => {
+  res.render("profile", { layout: false })
+});
+
+app.get("/shippingDetail", (req, res) => {
+  res.render("shippingDetail", { layout: false });
+});
+
+app.get("/orders", (req, res) => {
+  res.render("orderHistory", { layout: false });
+});
+
+app.get("/confirmOrder", (req, res) => {
+  res.render("confirmOrder", { layout: false });
+});
+
+app.get("/checkout", (req, res) => {
+  res.render("checkout", { layout: false });
+});
 //#endregion AdminPages
 
 //#region AdminPages
@@ -100,7 +121,7 @@ app.get("/productindatabase", (req, res) => {
 //#region Products
 app.get("/products", (req, res) => {
   res.render("productListing", { layout: false });
-}); 
+});
 
 app.get("/products/1", (req, res) => {
   res.render("productDetail", { layout: false });
