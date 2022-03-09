@@ -108,4 +108,8 @@ button.btn.btn-warning:hover{
 #hero-section-2 div {
   height: 100%;
 }
+div.payment.col{
+  text-align: center;
+  max-width: fit-content;
+}
 
