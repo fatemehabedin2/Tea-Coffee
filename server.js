@@ -75,7 +75,7 @@ app.get("/forgotpassword", (req, res) => {
 //#endregion
 
 //#region AuthorizedUsers
-app.get("/dashboarduser", (req, res) => {
+app.get("/dashboardUser", (req, res) => {
   res.render("dashboardUser", { layout: false });
 });
 app.get("/profile", (req, res) => {
@@ -100,21 +100,21 @@ app.get("/checkout", (req, res) => {
 //#endregion AdminPages
 
 //#region AdminPages
-app.get("/createproduct", (req, res) => {
+app.get("/createProduct", (req, res) => {
   res.render("createProduct", { layout: false });
 });
-app.get("/updateproduct", (req, res) => {
+app.get("/updateProduct", (req, res) => {
   res.render("updateProduct", { layout: false });
 });
-app.get("/deleteproduct", (req, res) => {
+app.get("/deleteProduct", (req, res) => {
   res.render("deleteProduct", { layout: false });
 });
-app.get("/dashboardadmin", (req, res) => {
+app.get("/dashboardAdmin", (req, res) => {
   res.render("dashboardAdmin", { layout: false });
 });
 
-app.get("/productindatabase", (req, res) => {
-  res.render("productInDB", { layout: false });
+app.get("/productInDatabase", (req, res) => {
+  res.render("productInDatabase", { layout: false });
 });
 //#endregion
 
