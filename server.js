@@ -1,15 +1,21 @@
 //#region COMMENT HEADER
 /* Author: Group 1
-   Date: Feb 23,2022
+   Date: March 26,2022
    Title: Project Phase 2
 
 */
 //#endregion
 
+
 //#region Server Setup
 var express = require("express");
 var app = express();
 var HTTP_PORT = process.env.PORT || 8080;
+
+const Sequelize = require('sequelize');
+const clientSessions = require("client-sessions");
+
+
 
 require("dotenv").config();
 
@@ -28,6 +34,30 @@ const { engine } = require("express-handlebars");
 app.engine(".hbs", engine({ extname: ".hbs" }));
 
 app.set("view engine", ".hbs");
+
+
+
+
+//#region CONNECT TO THE DATABASE
+
+//#endregion
+var sequelize = new Sequelize('da0rg01ri3pfsj', 'mrnohuyjzbaahe', '0bbb43a19ee6ffd1fba8dea290ec2f7eaa733ced8eea3bdd587d139b3725458b', {
+  host: 'ec2-34-233-157-9.compute-1.amazonaws.com',
+  dialect: 'postgres',
+  port: 5432,
+  dialectOptions: {
+    ssl: { rejectUnauthorized: false }
+  }
+});
+
+sequelize
+  .authenticate()
+  .then(function () {
+    console.log('Connection to database has been established successfully.');
+  })
+  .catch(function (err) {
+    console.log('Unable to connect to the database:', err);
+  });
 
 //#endregion
 
