@@ -99,7 +99,7 @@ app.get("/logout", (req, res) => {
   res.redirect("/")
 });
 app.get("/forgotpassword", (req, res) => {
-  res.render("forgotpassword", { layout: false });
+  res.render("forgotPassword", { layout: false });
 });
 
 
