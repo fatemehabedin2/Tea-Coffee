@@ -12,6 +12,10 @@ var express = require("express");
 var app = express();
 var HTTP_PORT = process.env.PORT || 8080;
 
+// body parser
+var bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: false}));
+
 const Sequelize = require('sequelize');
 const clientSessions = require("client-sessions");
 
