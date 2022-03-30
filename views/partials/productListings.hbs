@@ -1,31 +1,9 @@
 <div class="row all-products-wrap">
+	{{#each allProducts}}
 	<div class="col-md-4">
-		{{>productListingItem}}
+		{{>productListingItem product=this}}
 	</div>
-	<div class="col-md-4">
-		{{>productListingItem}}
-	</div>
-	<div class="col-md-4">
-		{{>productListingItem}}
-	</div>
-	<div class="col-md-4">
-		{{>productListingItem}}
-	</div>
-	<div class="col-md-4">
-		{{>productListingItem}}
-	</div>
-	<div class="col-md-4">
-		{{>productListingItem}}
-	</div>
-	<div class="col-md-4">
-		{{>productListingItem}}
-	</div>
-	<div class="col-md-4">
-		{{>productListingItem}}
-	</div>
-	<div class="col-md-4">
-		{{>productListingItem}}
-	</div>
+	{{/each}}
 </div>
 
 <nav class="d-flex justify-content-center">
