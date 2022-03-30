@@ -337,9 +337,27 @@ app.get("/productInDatabase", (req, res) => {
 
 //#endregion
 
+const getProducts = (numOfProducts = -1) => {
+  let limitedData = [];
+  return new Promise( (resolve, reject) => {
+    Product.findAll({raw: true})
+        .then(data => {        
+            if(numOfProducts > 0){
+              limitedData = data.filter((product, i) => numOfProducts > i);
+              resolve(limitedData);
+            }else{
+              resolve(data);
+            }
+        })
+        .catch(err => {
+            reject(err);
+        });
+  } );
+}
+
 //#region Products
 app.get("/products", (req, res) => {
-  Product.findAll({raw: true})
+  getProducts()
   .then(data => {
       res.render("productListing", {
         layout: false,
@@ -352,6 +370,7 @@ app.get("/products", (req, res) => {
 });
 
 app.get("/products/:prodID", (req, res) => {
+  let singleProduct = '';
   Product.findOne({
       where: {
         product_id: req.params.prodID
@@ -359,9 +378,16 @@ app.get("/products/:prodID", (req, res) => {
       raw: true
   })
   .then(data => {
+      singleProduct = data;
+      return getProducts(4);
+  })
+  .then(relatedProducts => {
       res.render("productDetail", {
         layout: false,
-        product: data
+        finalData: {
+          singleProduct: singleProduct,
+          relatedProducts: relatedProducts
+        }
       });
   })
   .catch(err => {

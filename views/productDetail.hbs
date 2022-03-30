@@ -13,18 +13,18 @@
 		<div id="mid-wrap" class="product-detail">
 			{{!-- all your content goes here --}}
 			<div class="container">
-                {{#if product}}
-                <div class="row product-wrap product-{{product.product_id}}">
+                {{#if finalData.singleProduct}}
+                <div class="row product-wrap product-{{finalData.singleProduct.product_id}}">
                     <div class="col-md-5 text-center">
-                        <img src="/{{product.image}}" alt="product" class="img-fluid" onerror="this.src='/images/product_placeholder.png'"/>
+                        <img src="/{{finalData.singleProduct.image}}" alt="product" class="img-fluid" onerror="this.src='/images/product_placeholder.png'"/>
                     </div>
 
                     <div class="col-md-7 mt-2">
                         <div class="product-content">
-                            <h2 class="display-5 mb-3">{{product.product_name}}</h2>
-                            <h6 class="card-text prod-desc mb-3">{{product.description}}</h6>
-                            <p class="card-text prod-price">Price: <strong>${{product.unit_price}}</strong></p>
-                            <p class="card-text prod-size">Size: <strong>{{product.quantity_in_stock}} lbs</strong></p>
+                            <h2 class="display-5 mb-3">{{finalData.singleProduct.product_name}}</h2>
+                            <h6 class="card-text prod-desc mb-3">{{finalData.singleProduct.description}}</h6>
+                            <p class="card-text prod-price">Price: <strong>${{finalData.singleProduct.unit_price}}</strong></p>
+                            <p class="card-text prod-size">Size: <strong>{{finalData.singleProduct.quantity_in_stock}} lbs</strong></p>
                             <div class="row">
                                 <div class="col-6">
                                     <label class="" for="qty">Quantity</label>
@@ -38,11 +38,11 @@
                     </div>
                 </div>
                 {{else}}
-                <h2 class="display-5 mb-3 text-center">Product is unavialable</h2>
+                <h2 class="display-5 mb-3 text-center">Product is unavailable</h2>
                 {{/if}}
             </div>
 
-            {{>relatedProducts}}
+            {{>relatedProducts relatedProd=finalData.relatedProducts}}
 		</div>
 
 		{{!-- footer --}}
