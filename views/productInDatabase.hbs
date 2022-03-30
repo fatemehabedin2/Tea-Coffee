@@ -28,53 +28,39 @@
         </tr>
       </thead>
       <tbody>
-         {{#each data}}
+        {{#each data}}
         <tr>
           <td scope="row">{{product_id}}</td>
           <td style="width: 150px;"> {{product_name}}</td>
           <td style="width: 350px;">{{description}}</td>
-          <td>{{unit_price}}</td>
+          <td>${{unit_price}}</td>
           <td>{{quantity_in_stock}}</td>
-          <td>{{category}}</td>
+          <td>{{category_id}}</td>
           <td>{{bestseller}}</td>
           <td>{{discount_percentage}}</td>
           <td><img src={{image}} width="100px" height="80px" </td>
           <td>
-            <a href="/updateProduct">
+            <form action="updateProduct" method="POST">
+              <input type="hidden" id="product_id" name="product_id" value={{product_id}}>
               <button type="button" class="btn btn-warning">Update</button></a>
+            </form>
           </td>
+
           <td>
-            <a href="/deleteProduct">
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Delete
-              </button></a>
+             <form action="deleteProduct" method="POST">
+              <input type="hidden" id="product_id" name="product_id" value={{product_id}}>
+              <button type="button" class="btn btn-danger">Delete</button></a>
+            </form>
+        
           </td>
         </tr>
-         {{/each}}
+        {{/each}}
 
       </tbody>
     </table>
 
   </div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Delete confirmation</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          Are you sure to delete this product id 1?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">NO</button>
-          <button type="button" class="btn btn-primary">YES</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   {{!-- footer --}}
   {{>footer}}

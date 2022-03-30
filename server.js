@@ -143,27 +143,25 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-<<<<<<< HEAD
   // synchronize the Database with our models and automatically add the
   // table if it does not exist
-  sequelize.sync().then(function () {
-    // create a new "User" and add it to the database
-    User.create({
-      first_name: "firstName",
-      last_name: "lastName",
-      address: "address",
-      email_id: "email",
-      pass_word: "password",
-      phone_number: "phone_number",
-      user_created_on: new Date(),
-      user_role: "user",
-=======
-  const firstName = req.body.firstName;
-  const lastName = req.body.lastName;
-  const address = req.body.address;
-  const email = req.body.email;
-  const password = req.body.password;
-  const phone_number = req.body.phone_number;
+  // sequelize.sync().then(function () {
+  //   // create a new "User" and add it to the database
+  //   User.create({
+  //     first_name: "firstName",
+  //     last_name: "lastName",
+  //     address: "address",
+  //     email_id: "email",
+  //     pass_word: "password",
+  //     phone_number: "phone_number",
+  //     user_created_on: new Date(),
+  //     user_role: "user",
+  // const firstName = req.body.firstName;
+  // const lastName = req.body.lastName;
+  // const address = req.body.address;
+  // const email = req.body.email;
+  // const password = req.body.password;
+  // const phone_number = req.body.phone_number;
   
   // synchronize the Database with our models and automatically add the 
 // table if it does not exist
@@ -183,7 +181,6 @@ sequelize.sync().then(function () {
     .then(function (User) {
       // you can now access the newly created User via the variable User
       console.log("success!");
->>>>>>> 4a9ee7323932af412fca04d545a349cacb98b617
     })
     .catch(function (error) {
       console.log("something went wrong!");
@@ -324,14 +321,29 @@ app.get("/dashboardAdmin", ensureAdmin, (req, res) => {
 });
 
 app.get("/productInDatabase", (req, res) => {
+  var products = [];
   sequelize.sync().then(function () {
-    Product.findAll().then(function (products) {
-      // for (var i = 0; i < products.length; i++) {
-      //   console.log(products[i]);
-      // }
+    Product.findAll().then(function (data) {
+      data = data.map(value => value.dataValues);
+      for (var i = 0; i < data.length; i++) {
+        var category_name="";
+        Category.
+        products.push({
+          product_id : data[i].product_id,
+          product_name: data[i].product_name,
+          description: data[i].description, 
+          image:data[i].image, 
+          unit_price: data[i].unit_price,
+          quantity_in_stock: data[i].quantity_in_stock,
+          category_id: data[i].category_id,
+          bestseller: data[i].bestseller,
+          discount_percentage: data[i].discount_percentage
+        })
+      }
       res.render("productInDatabase", {
+        user: req.session.user,
         data: products,
-        layout: false,
+        layout: false
       });
     });
   });
