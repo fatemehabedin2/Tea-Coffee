@@ -143,25 +143,13 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  // synchronize the Database with our models and automatically add the
-  // table if it does not exist
-  // sequelize.sync().then(function () {
-  //   // create a new "User" and add it to the database
-  //   User.create({
-  //     first_name: "firstName",
-  //     last_name: "lastName",
-  //     address: "address",
-  //     email_id: "email",
-  //     pass_word: "password",
-  //     phone_number: "phone_number",
-  //     user_created_on: new Date(),
-  //     user_role: "user",
-  // const firstName = req.body.firstName;
-  // const lastName = req.body.lastName;
-  // const address = req.body.address;
-  // const email = req.body.email;
-  // const password = req.body.password;
-  // const phone_number = req.body.phone_number;
+
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const address = req.body.address;
+  const email = req.body.email;
+  const password = req.body.password;
+  const phone_number = req.body.phone_number;
   
   // synchronize the Database with our models and automatically add the 
 // table if it does not exist
@@ -176,7 +164,7 @@ sequelize.sync().then(function () {
     pass_word: password,
     phone_number: phone_number,
     user_created_on: new Date(),
-    user_role:"user"
+    user_role:"customer"
   })
     .then(function (User) {
       // you can now access the newly created User via the variable User
@@ -326,9 +314,7 @@ app.get("/productInDatabase", (req, res) => {
     Product.findAll().then(function (data) {
       data = data.map(value => value.dataValues);
       for (var i = 0; i < data.length; i++) {
-        var category_name="";
-        Category.
-        products.push({
+          products.push({
           product_id : data[i].product_id,
           product_name: data[i].product_name,
           description: data[i].description, 
