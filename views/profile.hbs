@@ -9,7 +9,7 @@
 
 <body>
     {{!-- header --}}
-    {{>header}}
+    {{>user-header}}
 
     {{!-- div between header and footer--}}
     <div class="container-lg my-5">
@@ -18,7 +18,7 @@
                 <img src="/images/profile-pic.jpg" alt="profile pic" />
             </div>
             <div class="col-10 p-5 text-center">
-                <h2> Hi User! Welcome back </h2>
+                <h2> Hi {{user.firstName}}! Welcome back </h2>
             </div>
         </div>
         <div>
@@ -32,21 +32,24 @@
                         <div class="col">
                             <ul>
                                 <li>
-                                    <p><span class="fw-bold">Full Name:</span> Smith, John</p>
+                                    <p><span class="fw-bold">First Name:</span>{{user.firstName}}</p>
                                 </li>
                                 <li>
-                                    <p><span class="fw-bold">Email:</span> user@gmail.com</p>
+                                     <p><span class="fw-bold">Last Name:</span>{{user.lastName}}</p>
                                 </li>
                             </ul>
                         </div>
                         <div class="col">
                             <ul>
                                 <li>
-                                    <p><span class="fw-bold">Address:</span> 1 Yonge St, Toronto, Ontario, Canada</p>
+                                    <p><span class="fw-bold">Email:</span> {{user.email}}</p>
+                                </li>
+                                <li>
+                                    <p><span class="fw-bold">Address:</span>{{user.address}}</p>
                                 </li>
                             </ul>
                         </div>
-                        <div class="mb-4  p-4">
+                        <div class="mb-4 text-center p-4">
                             <form action="/editProfile">
                                 <button type="submit" class="btn btn-primary">Edit</button>
                             </form>
@@ -56,7 +59,7 @@
             </div>
         </div>
         <div class="mb-4 text-center p-5">
-            <a class="btn btn-primary" href="/orders" role="button">Your Order History</a>
+            <a class="btn btn-primary " href="/orders" role="button">Your Order History</a>
         </div>
     </div>
 
