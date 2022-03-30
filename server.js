@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const Sequelize = require("sequelize");
 const clientSessions = require("client-sessions");
 
-  //#region CONNECT TO THE DATABASE
+//#region CONNECT TO THE DATABASE
 var sequelize = new Sequelize(
   "da0rg01ri3pfsj",
   "mrnohuyjzbaahe",
@@ -43,19 +43,22 @@ sequelize
 
 //#endregion
 
-  //#region call Models
+//#region call Models
 const UserModel = require("./models/UserModel.js");
 const User = UserModel(sequelize, Sequelize);
 
-const ProductModel = require('./models/ProductModel');
+const ProductModel = require("./models/ProductModel");
 const Product = ProductModel(sequelize, Sequelize);
 
-const CategoryModel = require('./models/CategoryModel');
+const CategoryModel = require("./models/CategoryModel");
 const Category = CategoryModel(sequelize, Sequelize);
 
-Category.hasOne(Product,{ foreignKey: {
-  name: 'category_id',
-  field: 'category_id' }});
+Category.hasOne(Product, {
+  foreignKey: {
+    name: "category_id",
+    field: "category_id",
+  },
+});
 
 //#endregion
 require("dotenv").config();
@@ -65,7 +68,6 @@ function OnHttpStart() {
   console.log("Express server started successfully");
   console.log("Link: http://localhost:" + HTTP_PORT);
   console.log("****************************************");
-
 }
 
 app.use(express.static("views"));
@@ -73,29 +75,40 @@ app.use(express.static("public"));
 
 const { engine } = require("express-handlebars");
 
-
-// added custome helper 
-app.engine(".hbs", engine({
-  extname: ".hbs" ,
-  helpers: {
-    navLink: function (url, options) {
-      let liClass = (url == app.locals.activeRoute) ? 'nav-item active' : 'nav-item';
-      return `<li class="` + liClass + `" >
-                  <a class="nav-link" href="` + url + `">` + options.fn(this) + `</a>
-              </li>`;
-  }
-  }
-}));
+// added custome helper
+app.engine(
+  ".hbs",
+  engine({
+    extname: ".hbs",
+    helpers: {
+      navLink: function (url, options) {
+        let liClass =
+          url == app.locals.activeRoute ? "nav-item active" : "nav-item";
+        return (
+          `<li class="` +
+          liClass +
+          `" >
+                  <a class="nav-link" href="` +
+          url +
+          `">` +
+          options.fn(this) +
+          `</a>
+              </li>`
+        );
+      },
+    },
+  })
+);
 
 app.set("view engine", ".hbs");
 
-// added the property 'activeRoute' to 'app.locals' whenever the route changes, 
+// added the property 'activeRoute' to 'app.locals' whenever the route changes,
 //ie: if our route is '/products', the app.locals.activeRoute value will be '/products'
-app.use( (req, res, next) => {
+app.use((req, res, next) => {
   let route = req.baseUrl + req.path;
-  app.locals.activeRoute = (route == '/') ? '/' : route.replace(/\/$/, '');
+  app.locals.activeRoute = route == "/" ? "/" : route.replace(/\/$/, "");
   next();
-})
+});
 
 // const clientSessions = require("client-sessions");
 app.use(
@@ -142,7 +155,7 @@ app.post("/register", (req, res) => {
       pass_word: "password",
       phone_number: "phone_number",
       user_created_on: new Date(),
-      user_role:"user"
+      user_role: "user",
     })
       .then(function (User) {
         // you can now access the newly created User via the variable User
@@ -272,13 +285,13 @@ app.post("/editProfile", ensureLogin, (req, res) => {
 //#endregion AdminPages
 
 //#region AdminPages
-app.get("/createProduct", (req, res) => {
+app.get("/createProduct", ensureAdmin, (req, res) => {
   res.render("createProduct", { layout: false });
 });
-app.get("/updateProduct", (req, res) => {
+app.get("/updateProduct", ensureAdmin, (req, res) => {
   res.render("updateProduct", { layout: false });
 });
-app.get("/deleteProduct", (req, res) => {
+app.get("/deleteProduct", ensureAdmin, (req, res) => {
   res.render("deleteProduct", { layout: false });
 });
 app.get("/dashboardAdmin", ensureAdmin, (req, res) => {
@@ -286,8 +299,19 @@ app.get("/dashboardAdmin", ensureAdmin, (req, res) => {
 });
 
 app.get("/productInDatabase", (req, res) => {
-  res.render("productInDatabase", { layout: false });
+  sequelize.sync().then(function () {
+    Product.findAll().then(function (products) {
+      // for (var i = 0; i < products.length; i++) {
+      //   console.log(products[i]);
+      // }
+      res.render("productInDatabase", {
+        data: products,
+        layout: false,
+      });
+    });
+  });
 });
+
 //#endregion
 
 //#region Products
@@ -295,26 +319,26 @@ app.get("/products", (req, res) => {
   let allProducts = [
     {
       id: 1,
-      prodName: 'prod name',
-      prodDesc: 'prod desc',
-      price: '10.66'
+      prodName: "prod name",
+      prodDesc: "prod desc",
+      price: "10.66",
     },
     {
       id: 2,
-      prodName: '2 prod name',
-      prodDesc: 'prod desc',
-      price: '210.66'
+      prodName: "2 prod name",
+      prodDesc: "prod desc",
+      price: "210.66",
     },
     {
       id: 3,
-      prodName: '3 prod name',
-      prodDesc: 'prod desc',
-      price: '30.66'
-    }
+      prodName: "3 prod name",
+      prodDesc: "prod desc",
+      price: "30.66",
+    },
   ];
   res.render("productListing", {
     layout: false,
-    allProducts: allProducts
+    allProducts: allProducts,
   });
 });
 

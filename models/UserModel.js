@@ -13,7 +13,10 @@ module.exports = function(sequelize, DataTypes) {
         first_name: DataTypes.STRING,
         last_name: DataTypes.STRING, 
         address: DataTypes.STRING,
-        email_id: DataTypes.STRING,
+        email_id: {
+            type: DataTypes.STRING,
+            unique: true
+        },
         pass_word: DataTypes.STRING,
         phone_number: DataTypes.STRING,
         user_created_on: DataTypes.DATE,

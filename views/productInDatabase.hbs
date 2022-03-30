@@ -18,8 +18,8 @@
           <th scope="col">Name</th>
           <th scope="col">Description</th>
           <th scope="col">Unit Price</th>
-          <th scope="col">Category</th>
           <th scope="col">Quantity</th>
+          <th scope="col">Category</th>
           <th scope="col">Bestseller</th>
           <th scope="col">Discount</th>
           <th scope="col">Image</th>
@@ -28,17 +28,17 @@
         </tr>
       </thead>
       <tbody>
+         {{#each data}}
         <tr>
-          <td scope="row">1</td>
-          <td style="width: 150px;"> Signature, Breakfast Ground Coffee</td>
-          <td style="width: 350px;">Freshly roasted coffee, ground to suit a variety of brewing gadgets including
-            cafetières, filter coffee machines and drip coffee brew methods.</td>
-          <td>18.99</td>
-          <td>25</td>
-          <td>true</td>
-          <td>Ground Coffee</td>
-          <td></td>
-          <td><img src="images/Picture1.jpg" width="100px" height="80px" </td>
+          <td scope="row">{{product_id}}</td>
+          <td style="width: 150px;"> {{product_name}}</td>
+          <td style="width: 350px;">{{description}}</td>
+          <td>{{unit_price}}</td>
+          <td>{{quantity_in_stock}}</td>
+          <td>{{category}}</td>
+          <td>{{bestseller}}</td>
+          <td>{{discount_percentage}}</td>
+          <td><img src={{image}} width="100px" height="80px" </td>
           <td>
             <a href="/updateProduct">
               <button type="button" class="btn btn-warning">Update</button></a>
@@ -50,50 +50,7 @@
               </button></a>
           </td>
         </tr>
-        <tr>
-          <td scope="row">2</td>
-          <td style="width: 150px;"> Signature, Breakfast Ground Coffee</td>
-          <td style="width: 350px;">Freshly roasted coffee, ground to suit a variety of brewing gadgets including
-            cafetières, filter coffee machines and drip coffee brew methods.</td>
-          <td>18.99</td>
-          <td>25</td>
-          <td>true</td>
-          <td>Ground Coffee</td>
-          <td></td>
-          <td><img src="images/Picture1.jpg" width="100px" height="80px" alt="product image"></td>
-          <td>
-            <a href="/updateProduct">
-              <button type="button" class="btn btn-warning">Update</button></a>
-          </td>
-          <td>
-            <a href="/deleteProduct">
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Delete
-              </button></a>
-          </td>
-        </tr>
-        <tr>
-          <td scope="row">3</td>
-          <td style="width: 150px;"> Signature, Breakfast Ground Coffee</td>
-          <td style="width: 350px;">Freshly roasted coffee, ground to suit a variety of brewing gadgets including
-            cafetières, filter coffee machines and drip coffee brew methods.</td>
-          <td>18.99</td>
-          <td>25</td>
-          <td>true</td>
-          <td>Ground Coffee</td>
-          <td></td>
-          <td><img src="images/Picture1.jpg" width="100px" height="80px" </td>
-          <td>
-            <a href="/updateProduct">
-              <button type="button" class="btn btn-warning">Update</button></a>
-          </td>
-          <td>
-            <a href="/deleteProduct">
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Delete
-              </button></a>
-          </td>
-        </tr>
+         {{/each}}
 
       </tbody>
     </table>
