@@ -16,6 +16,10 @@ module.exports = function(sequelize, DataTypes) {
         email_id: DataTypes.STRING,
         pass_word: DataTypes.STRING,
         phone_number: DataTypes.STRING,
+        user_created_on: DataTypes.DATE,
         user_role: DataTypes.STRING
+},{
+    createdAt: false, // disable createdAt
+    updatedAt: false // disable updatedAt
 });
 }

@@ -132,7 +132,6 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   // synchronize the Database with our models and automatically add the
   // table if it does not exist
-
   sequelize.sync().then(function () {
     // create a new "User" and add it to the database
     User.create({
@@ -142,6 +141,7 @@ app.post("/register", (req, res) => {
       email_id: "email",
       pass_word: "password",
       phone_number: "phone_number",
+      user_created_on: new Date(),
       user_role:"user"
     })
       .then(function (User) {
@@ -150,6 +150,7 @@ app.post("/register", (req, res) => {
       })
       .catch(function (error) {
         console.log("something went wrong!");
+        console.log(error);
       });
   });
 });

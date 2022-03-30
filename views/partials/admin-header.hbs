@@ -37,20 +37,10 @@
       <div class="collapse navbar-collapse justify-content-center" id="navbarToggler">
 
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/dashboardAdmin">Dashboard Admin</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/createProduct">Product Creation</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/productInDatabase">Product in Database</a>
-          </li>
-
+          {{#navLink '/'}} Home {{/navLink}}
+					{{#navLink '/dashboardAdmin'}} Dashboard Admin {{/navLink}}
+					{{#navLink '/createProduct'}} Product Creation {{/navLink}}
+					{{#navLink '/productInDatabase'}} Product in Database {{/navLink}}
         </ul>
       </div>
     </div>

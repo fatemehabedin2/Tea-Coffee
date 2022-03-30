@@ -7,5 +7,8 @@ module.exports = function(sequelize, DataTypes) {
             autoIncrement: true 
         },
         category_type: DataTypes.STRING
+},{
+    createdAt: false, // disable createdAt
+    updatedAt: false // disable updatedAt
 });
 }

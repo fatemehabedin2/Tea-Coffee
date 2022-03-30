@@ -16,5 +16,8 @@ module.exports = function(sequelize, DataTypes) {
         },
         bestseller: DataTypes.BOOLEAN,
         discount_percentage: DataTypes.FLOAT
+},{
+    createdAt: false, // disable createdAt
+    updatedAt: false // disable updatedAt
 });
 }
