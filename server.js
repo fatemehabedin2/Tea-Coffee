@@ -339,29 +339,15 @@ app.get("/productInDatabase", (req, res) => {
 
 //#region Products
 app.get("/products", (req, res) => {
-  let allProducts = [
-    {
-      id: 1,
-      prodName: "prod name",
-      prodDesc: "prod desc",
-      price: "10.66",
-    },
-    {
-      id: 2,
-      prodName: "2 prod name",
-      prodDesc: "prod desc",
-      price: "210.66",
-    },
-    {
-      id: 3,
-      prodName: "3 prod name",
-      prodDesc: "prod desc",
-      price: "30.66",
-    },
-  ];
-  res.render("productListing", {
-    layout: false,
-    allProducts: allProducts,
+  Product.findAll({raw: true})
+  .then(data => {
+      res.render("productListing", {
+        layout: false,
+        allProducts: data,
+      });
+  })
+  .catch(err => {
+      console.log('No Products found: ' + err);
   });
 });
 
