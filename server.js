@@ -338,20 +338,22 @@ app.get("/productInDatabase", (req, res) => {
 //#endregion
 
 const getProducts = (numOfProducts = -1) => {
-  let limitedData = [];
+  let queryOptions = {
+    raw : true
+  };
+
+  if(numOfProducts > 0){
+    queryOptions.limit = numOfProducts;
+  }
+
   return new Promise( (resolve, reject) => {
-    Product.findAll({raw: true})
-        .then(data => {        
-            if(numOfProducts > 0){
-              limitedData = data.filter((product, i) => numOfProducts > i);
-              resolve(limitedData);
-            }else{
-              resolve(data);
-            }
-        })
-        .catch(err => {
-            reject(err);
-        });
+    Product.findAll(queryOptions)
+    .then(data => {        
+      resolve(data);
+    })
+    .catch(err => {
+        reject(err);
+    });
   } );
 }
 
