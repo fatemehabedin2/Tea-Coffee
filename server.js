@@ -357,11 +357,20 @@ const getProducts = (numOfProducts = -1) => {
 
 //#region Products
 app.get("/products", (req, res) => {
+  let allProducts = '';
+
   getProducts()
+  .then(data => {
+      allProducts = data;
+      return Category.findAll({raw: true});
+  })
   .then(data => {
       res.render("productListing", {
         layout: false,
-        allProducts: data,
+        finalData: {
+          allProducts: allProducts,
+          allCategories: data
+        }
       });
   })
   .catch(err => {

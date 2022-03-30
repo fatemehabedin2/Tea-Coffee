@@ -32,24 +32,22 @@
                                     <div class="card-body filter-wrap">
                                         <div class="title-wrap mb-3 d-flex justify-content-between">
                                             <h6 class="h5 text-primary">Filter By</h6>
+                                            {{#if finalData.allCategories}}
                                             <a href="#" class="h5 text-primary">Clear All</a>
+                                            {{/if}}
                                         </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="decaf-coffee">
-                                            <label class="form-check-label" for="decaf-coffee">Decaf Coffee</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="espresso" checked>
-                                            <label class="form-check-label" for="espresso">Espresso</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="estate-coffee" checked>
-                                            <label class="form-check-label" for="estate-coffee">Estate Coffee</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="green-tea-bags">
-                                            <label class="form-check-label" for="green-tea-bags">Green Tea Bags</label>
-                                        </div>
+
+                                        {{#if finalData.allCategories}}
+                                            {{#each finalData.allCategories}}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="{{category_id}}">
+                                                <label class="form-check-label" for="{{category_id}}">{{category_type}}</label>
+                                            </div>
+                                            {{/each}}
+                                        {{else}}
+                                            <div class="form-check-label">No categories found to filter products</div>
+                                        {{/if}}
+
                                     </div>
                                 </div>
                                 <div class="card mb-3">
@@ -85,7 +83,7 @@
                     </div>
 
                     <div class="col-12 col-lg-9">
-                        {{>productListings allProducts=allProducts}}                         
+                        {{>productListings allProducts=finalData.allProducts}}                         
                     </div>
                 </div>
 
