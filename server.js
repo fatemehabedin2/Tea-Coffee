@@ -73,9 +73,29 @@ app.use(express.static("public"));
 
 const { engine } = require("express-handlebars");
 
-app.engine(".hbs", engine({ extname: ".hbs" }));
+
+// added custome helper 
+app.engine(".hbs", engine({
+  extname: ".hbs" ,
+  helpers: {
+    navLink: function (url, options) {
+      let liClass = (url == app.locals.activeRoute) ? 'nav-item active' : 'nav-item';
+      return `<li class="` + liClass + `" >
+                  <a class="nav-link" href="` + url + `">` + options.fn(this) + `</a>
+              </li>`;
+  }
+  }
+}));
 
 app.set("view engine", ".hbs");
+
+// added the property 'activeRoute' to 'app.locals' whenever the route changes, 
+//ie: if our route is '/products', the app.locals.activeRoute value will be '/products'
+app.use( (req, res, next) => {
+  let route = req.baseUrl + req.path;
+  app.locals.activeRoute = (route == '/') ? '/' : route.replace(/\/$/, '');
+  next();
+})
 
 // const clientSessions = require("client-sessions");
 app.use(
