@@ -351,8 +351,23 @@ app.get("/products", (req, res) => {
   });
 });
 
-app.get("/products/1", (req, res) => {
-  res.render("productDetail", { layout: false });
+app.get("/products/:prodID", (req, res) => {
+  Product.findOne({
+      where: {
+        product_id: req.params.prodID
+      },
+      raw: true
+  })
+  .then(data => {
+      res.render("productDetail", {
+        layout: false,
+        product: data
+      });
+  })
+  .catch(err => {
+      console.log('No results returned for product with product ID ' + req.params.prodID);
+      console.log(err);
+  });
 });
 
 app.get("/search", (req, res) => {
