@@ -143,6 +143,7 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+<<<<<<< HEAD
   // synchronize the Database with our models and automatically add the
   // table if it does not exist
   sequelize.sync().then(function () {
@@ -156,16 +157,40 @@ app.post("/register", (req, res) => {
       phone_number: "phone_number",
       user_created_on: new Date(),
       user_role: "user",
+=======
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const address = req.body.address;
+  const email = req.body.email;
+  const password = req.body.password;
+  const phone_number = req.body.phone_number;
+  
+  // synchronize the Database with our models and automatically add the 
+// table if it does not exist
+
+sequelize.sync().then(function () {
+  // create a new "User" and add it to the database
+  User.create({
+    first_name: firstName,
+    last_name: lastName,
+    address: address,
+    email_id: email,
+    pass_word: password,
+    phone_number: phone_number,
+    user_created_on: new Date(),
+    user_role:"user"
+  })
+    .then(function (User) {
+      // you can now access the newly created User via the variable User
+      console.log("success!");
+>>>>>>> 4a9ee7323932af412fca04d545a349cacb98b617
     })
-      .then(function (User) {
-        // you can now access the newly created User via the variable User
-        console.log("success!");
-      })
-      .catch(function (error) {
-        console.log("something went wrong!");
-        console.log(error);
-      });
-  });
+    .catch(function (error) {
+      console.log("something went wrong!");
+      console.log(error);
+    });
+ });
+      res.redirect("/login");
 });
 
 app.get("/shoppingCart", (req, res) => {
