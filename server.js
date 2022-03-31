@@ -14,6 +14,10 @@ var HTTP_PORT = process.env.PORT || 8080;
 var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 
+//cookie parser
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 const Sequelize = require("sequelize");
 const clientSessions = require("client-sessions");
 
@@ -82,23 +86,45 @@ app.engine(
     extname: ".hbs",
     helpers: {
       navLink: function (url, options) {
-        let liClass =
-          url == app.locals.activeRoute ? "nav-item active" : "nav-item";
-        return (
-          `<li class="` +
-          liClass +
-          `" >
-                  <a class="nav-link" href="` +
-          url +
-          `">` +
-          options.fn(this) +
-          `</a>
-              </li>`
+        let liClass = url == app.locals.activeRoute ? "nav-item active" : "nav-item";
+        return ( `<li class="` + liClass + `" >
+                  <a class="nav-link" href="` + url + `">` +
+                    options.fn(this) +
+                  `</a>
+                </li>`
         );
       },
+      for: function(from, to, incr, block) {
+        var accum = '';
+        for(var i = from; i <= to; i += incr)
+            accum += block.fn(i);
+        return accum;
+      },
+      sum: function(a, b){
+        return  parseInt(a) + b;
+      },
+      notEqual: function(lvalue, rvalue, options) {
+          if (arguments.length < 3) throw new Error('Handlebars Helper equal needs 2 parameters');
+
+          if (lvalue == rvalue) {
+              return options.inverse(this);
+          } else {
+              return options.fn(this);
+          }
+      },
+      equal: function(lvalue, rvalue, options) {
+        if (arguments.length < 3) throw new Error('Handlebars Helper equal needs 2 parameters');
+
+        if (lvalue != rvalue) {
+            return options.inverse(this);
+        } else {
+            return options.fn(this);
+        }
+    }
     },
   })
 );
+
 
 app.set("view engine", ".hbs");
 
@@ -431,40 +457,163 @@ app.get("/productInDatabase", (req, res) => {
 
 //#endregion
 
+
 //#region Products
+const getPagination = (page, size) => {
+  const limit = size ? size : 9;
+  page--;
+  const offset = page ? page * limit : 0;
+  return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+  const { count: totalItems, rows: products } = data;
+  const currentPage = page ? page : 1;
+  const totalPages = Math.ceil(totalItems / limit);
+  return { totalItems, products, totalPages, currentPage };
+};
+
+const getProducts = (query) => {
+  const { page, size, product_name } = query;
+  var condition = product_name ? 
+    { product_name: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('product_name')), 'LIKE', '%' + product_name.toLowerCase() + '%') } 
+    : null;
+
+  // var condition = { category_id: [1] };
+
+
+  const { limit, offset } = getPagination(page, size);
+
+  return new Promise( (resolve, reject) => {
+    Product.findAndCountAll({
+      where: condition,
+      limit,
+      offset,
+      raw: true
+    })
+    .then(data => {
+      const response = getPagingData(data, page, limit);       
+      resolve(response);
+    })
+    .catch(err => {
+        reject(err);
+    });
+  } );
+}
+
 app.get("/products", (req, res) => {
-  let allProducts = [
-    {
-      id: 1,
-      prodName: "prod name",
-      prodDesc: "prod desc",
-      price: "10.66",
-    },
-    {
-      id: 2,
-      prodName: "2 prod name",
-      prodDesc: "prod desc",
-      price: "210.66",
-    },
-    {
-      id: 3,
-      prodName: "3 prod name",
-      prodDesc: "prod desc",
-      price: "30.66",
-    },
-  ];
-  res.render("productListing", {
-    layout: false,
-    allProducts: allProducts,
+  let allProductsResp = '';
+  getProducts(req.query)
+  .then(data => {
+      allProductsResp = data;
+      return Category.findAll({raw: true});
+  })
+  .then(data => {
+      res.render("productListing", {
+        layout: false,
+        finalData: {
+          allProductsResp: allProductsResp,
+          allCategories: data
+        }
+      });
+  })
+  .catch(err => {
+      console.log('No Products found: ' + err);
   });
 });
 
-app.get("/products/1", (req, res) => {
-  res.render("productDetail", { layout: false });
+app.post("/products", (req, res) => {
+  const category_id = [];
+  for (const key in req.body) {
+    category_id.push(key);
+  }
+  
+  console.log(category_id);
+
+  res.query.categories=category_id;
+
+  res.render('productListing');
+  
+  // console.log(req.body)
+  // let allProductsResp = '';
+  // getProducts(req.query)
+  // .then(data => {
+  //     allProductsResp = data;
+  //     return Category.findAll({raw: true});
+  // })
+  // .then(data => {
+  //     res.render("productListing", {
+  //       layout: false,
+  //       finalData: {
+  //         allProductsResp: allProductsResp,
+  //         allCategories: data
+  //       }
+  //     });
+  // })
+  // .catch(err => {
+  //     console.log('No Products found: ' + err);
+  // });
 });
 
-app.get("/search", (req, res) => {
-  res.render("productSearch", { layout: false });
+app.get("/products/:prodID", (req, res) => {
+  let singleProduct = '';
+  Product.findOne({
+      where: {
+        product_id: req.params.prodID
+      },
+      raw: true
+  })
+  .then(data => {
+      singleProduct = data;
+      return Product.findAll({
+        limit: 4,
+        raw: true
+      })
+  })
+  .then(relatedProducts => {
+      res.render("productDetail", {
+        layout: false,
+        finalData: {
+          singleProduct: singleProduct,
+          relatedProducts: relatedProducts
+        }
+      });
+  })
+  .catch(err => {
+      console.log('No results returned for product with product ID ' + req.params.prodID);
+      console.log(err);
+  });
+});
+
+// displaying products with pagination on search page
+app.get("/search", (req, res) => { 
+  const query = req.query;
+  const searchText = (req.query.searchTerm) ? req.query.searchTerm : req.body.searchTerm;
+
+  if(searchText !== undefined){
+    query.product_name = searchText;
+    getProducts(query)
+    .then(data => {
+        res.render("productSearch", {
+          layout: false,
+          finalData: {
+            searchText,
+            filteredProductsResp: data
+          }
+        });
+    })
+    .catch(err => {
+        console.log('No Products found: ' + err);
+    });
+  }else{
+    res.render("productSearch", {
+      layout: false,
+      finalData: {
+        searchText: '',
+        filteredProductsResp: []
+      }
+    });
+  }
 });
 
 //#endregion
