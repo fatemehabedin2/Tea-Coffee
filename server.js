@@ -120,9 +120,18 @@ app.use(
   })
 );
 
-//#region Routes
-/*
- */
+//#region Multer
+
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: "./views/images/",
+  filename: function (req, file, cb) {
+    cb(null, "New" + file.originalname);
+  },
+});
+const upload = multer({ storage: storage });
 //#endregion
 
 //#region General Pages
@@ -143,39 +152,38 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const address = req.body.address;
   const email = req.body.email;
   const password = req.body.password;
   const phone_number = req.body.phone_number;
-  
-  // synchronize the Database with our models and automatically add the 
-// table if it does not exist
 
-sequelize.sync().then(function () {
-  // create a new "User" and add it to the database
-  User.create({
-    first_name: firstName,
-    last_name: lastName,
-    address: address,
-    email_id: email,
-    pass_word: password,
-    phone_number: phone_number,
-    user_created_on: new Date(),
-    user_role:"customer"
-  })
-    .then(function (User) {
-      // you can now access the newly created User via the variable User
-      console.log("success!");
+  // synchronize the Database with our models and automatically add the
+  // table if it does not exist
+
+  sequelize.sync().then(function () {
+    // create a new "User" and add it to the database
+    User.create({
+      first_name: firstName,
+      last_name: lastName,
+      address: address,
+      email_id: email,
+      pass_word: password,
+      phone_number: phone_number,
+      user_created_on: new Date(),
+      user_role: "customer",
     })
-    .catch(function (error) {
-      console.log("something went wrong!");
-      console.log(error);
-    });
- });
-      res.redirect("/login");
+      .then(function (User) {
+        // you can now access the newly created User via the variable User
+        console.log("success!");
+      })
+      .catch(function (error) {
+        console.log("something went wrong!");
+        console.log(error);
+      });
+  });
+  res.redirect("/login");
 });
 
 app.get("/shoppingCart", (req, res) => {
@@ -248,9 +256,51 @@ app.get("/forgotpassword", (req, res) => {
 //#endregion
 
 //#region AuthorizedUsers
-app.get("/dashboardUser", ensureLogin, (req, res) => {
-  res.render("dashboardUser", { layout: false });
+app.get("/dashboardUser", (req, res) => {
+  var teaProducts = [];
+  var coffeeProducts = [];
+  sequelize.sync().then(function () {
+    Product.findAll({
+      where: {
+        bestseller: true,
+        category_id: [1, 2, 3],
+      },
+    }).then(function (data) {
+      for (var i = 0; i < 4; i++) {
+        teaProducts.push({
+          product_id: data[i].product_id,
+          product_name: data[i].product_name,
+          image: data[i].image,
+          unit_price: data[i].unit_price,
+        });
+      }
+      sequelize.sync().then(function () {
+        Product.findAll({
+          where: {
+            bestseller: true,
+            category_id: [4, 5],
+          },
+        }).then(function (data) {
+          for (var i = 0; i < 4; i++) {
+            coffeeProducts.push({
+              product_id: data[i].product_id,
+              product_name: data[i].product_name,
+              image: data[i].image,
+              unit_price: data[i].unit_price,
+            });
+          }
+          res.render("dashboardUser", {
+            user: req.session.user,
+            data1: teaProducts,
+            data2: coffeeProducts,
+            layout: false,
+          });
+        });
+      });
+    });
+  });
 });
+
 app.get("/profile", ensureLogin, (req, res) => {
   res.render("profile", { user: req.session.user, layout: false });
 });
@@ -295,41 +345,85 @@ app.post("/editProfile", ensureLogin, (req, res) => {
 //#endregion AdminPages
 
 //#region AdminPages
-app.get("/createProduct", ensureAdmin, (req, res) => {
+app.get("/createProduct", (req, res) => {
   res.render("createProduct", { layout: false });
 });
-app.get("/updateProduct", ensureAdmin, (req, res) => {
+
+const validate = require("./utilities/validateProduct");
+app.post("/createProduct", upload.single("photo"), (req, res) => {
+  if (validate.checkPrice(req.body.unit_price)) {
+    if (validate.checkDiscount(req.body.discount)) {
+      sequelize.sync().then(function () {
+        Product.create({
+          product_name: req.body.product_name,
+          description: req.body.description,
+          image: "images/" + req.file.filename,
+          unit_price: Number(req.body.unit_price),
+          quantity_in_stock: parseInt(req.body.quantity),
+          category_id: parseInt(req.body.category),
+          bestseller: false,
+          discount_percentage: Number(req.body.discount),
+        })
+          .then(function (product) {
+            console.log("success!");
+            console.log(product);
+          })
+          .catch(function (error) {
+            console.log("something went wrong!");
+            console.log(error);
+          });
+      });
+      res.render("productInDatabase", {
+        user: req.session.user,
+        layout: false,
+      });
+    } else {
+      res.render("createProduct", {
+        user: req.session.user,
+        message1: "Invalid Percentage",
+        layout: false,
+      });
+    }
+  } else {
+    res.render("createProduct", {
+      user: req.session.user,
+      message2: "Invalid Price",
+      layout: false,
+    });
+  }
+});
+
+app.get("/updateProduct", (req, res) => {
   res.render("updateProduct", { layout: false });
 });
-app.get("/deleteProduct", ensureAdmin, (req, res) => {
+app.get("/deleteProduct", (req, res) => {
   res.render("deleteProduct", { layout: false });
 });
-app.get("/dashboardAdmin", ensureAdmin, (req, res) => {
-  res.render("dashboardAdmin", { layout: false });
+app.get("/dashboardAdmin", (req, res) => {
+  res.render("dashboardAdmin", { user: req.session.user, layout: false });
 });
 
 app.get("/productInDatabase", (req, res) => {
   var products = [];
   sequelize.sync().then(function () {
     Product.findAll().then(function (data) {
-      data = data.map(value => value.dataValues);
       for (var i = 0; i < data.length; i++) {
-          products.push({
-          product_id : data[i].product_id,
+        products.push({
+          product_id: data[i].product_id,
           product_name: data[i].product_name,
-          description: data[i].description, 
-          image:data[i].image, 
+          description: data[i].description,
+          image: data[i].image,
           unit_price: data[i].unit_price,
           quantity_in_stock: data[i].quantity_in_stock,
           category_id: data[i].category_id,
           bestseller: data[i].bestseller,
-          discount_percentage: data[i].discount_percentage
-        })
+          discount_percentage: data[i].discount_percentage,
+        });
       }
       res.render("productInDatabase", {
         user: req.session.user,
         data: products,
-        layout: false
+        layout: false,
       });
     });
   });

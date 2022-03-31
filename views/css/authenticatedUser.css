@@ -112,4 +112,7 @@ div.payment.col{
   text-align: center;
   max-width: fit-content;
 }
+.error-msg{
+  color: red;
+}
 
