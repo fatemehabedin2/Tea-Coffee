@@ -13,7 +13,9 @@
 		<div id="mid-wrap">
 			{{!-- all your content goes here --}}
             <div class="container">
-				<h4 class="display-4 text-center">Search Results for '{{finalData.searchText}}'</h4>
+				{{#if finalData.searchText}}
+					<h4 class="display-4 text-center">Search Results for '{{finalData.searchText}}'</h4>
+				{{/if}}
 
                 {{>productListings allProductsResp=finalData.filteredProductsResp}}                 
             </div>

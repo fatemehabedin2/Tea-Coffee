@@ -16,8 +16,8 @@
 				</div>
 
 				<div class="col-12 col-lg-4 search-col">	
-					<form class="d-flex" method="post" action="/search">
-						<input required name="searchInput" class="form-control mr-sm-2" type="search" placeholder="Search our Products"
+					<form class="d-flex" method="get" action="/search">
+						<input required name="searchTerm" class="form-control mr-sm-2" type="search" placeholder="Search our Products"
 							aria-label="Search" value="{{#if searchText}}{{searchText}}{{/if}}">
 						<button class="btn btn-outline-primary" type="submit">
 							<i class="fa fa-search" aria-hidden="true"></i>

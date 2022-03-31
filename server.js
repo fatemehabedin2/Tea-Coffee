@@ -384,6 +384,10 @@ const getProducts = (query) => {
   var condition = product_name ? 
     { product_name: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('product_name')), 'LIKE', '%' + product_name.toLowerCase() + '%') } 
     : null;
+
+  // var condition = { category_id: [1] };
+
+
   const { limit, offset } = getPagination(page, size);
 
   return new Promise( (resolve, reject) => {
@@ -424,6 +428,39 @@ app.get("/products", (req, res) => {
   });
 });
 
+app.post("/products", (req, res) => {
+  const category_id = [];
+  for (const key in req.body) {
+    category_id.push(key);
+  }
+  
+  console.log(category_id);
+
+  res.query.categories=category_id;
+
+  res.render('productListing');
+  
+  // console.log(req.body)
+  // let allProductsResp = '';
+  // getProducts(req.query)
+  // .then(data => {
+  //     allProductsResp = data;
+  //     return Category.findAll({raw: true});
+  // })
+  // .then(data => {
+  //     res.render("productListing", {
+  //       layout: false,
+  //       finalData: {
+  //         allProductsResp: allProductsResp,
+  //         allCategories: data
+  //       }
+  //     });
+  // })
+  // .catch(err => {
+  //     console.log('No Products found: ' + err);
+  // });
+});
+
 app.get("/products/:prodID", (req, res) => {
   let singleProduct = '';
   Product.findOne({
@@ -456,31 +493,33 @@ app.get("/products/:prodID", (req, res) => {
 
 // displaying products with pagination on search page
 app.get("/search", (req, res) => { 
-  const searchText = req.cookies.searchInput;
   const query = req.query;
-  query.product_name = searchText;
+  const searchText = (req.query.searchTerm) ? req.query.searchTerm : req.body.searchTerm;
 
-  getProducts(query)
-  .then(data => {
-      res.render("productSearch", {
-        layout: false,
-        finalData: {
-          searchText,
-          filteredProductsResp: data
-        }
-      });
-  })
-  .catch(err => {
-      console.log('No Products found: ' + err);
-  });
-});
-
-// when user searches from input box it enters here
-app.post("/search", (req, res) => { 
-  const searchText = req.body.searchInput;
-  res.cookie('searchInput', req.body.searchInput);
-  //for displaying products on search page
-  res.redirect('search'); 
+  if(searchText !== undefined){
+    query.product_name = searchText;
+    getProducts(query)
+    .then(data => {
+        res.render("productSearch", {
+          layout: false,
+          finalData: {
+            searchText,
+            filteredProductsResp: data
+          }
+        });
+    })
+    .catch(err => {
+        console.log('No Products found: ' + err);
+    });
+  }else{
+    res.render("productSearch", {
+      layout: false,
+      finalData: {
+        searchText: '',
+        filteredProductsResp: []
+      }
+    });
+  }
 });
 
 //#endregion
