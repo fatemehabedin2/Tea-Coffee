@@ -8,25 +8,30 @@
 	</div>
 	<nav class="d-flex justify-content-center">
 		<ul class="pagination">
+			{{!-- display previous btn on all pages except for the 1st page --}}
 			{{#notEqual 1 allProductsResp.currentPage}}
 			<li class="page-item">
-				<a class="page-link" href="/products?page={{#sum allProductsResp.currentPage -1}}{{/sum}}">
+				<a class="page-link" href="?page={{#sum allProductsResp.currentPage -1}}{{/sum}}">
 					Previous
 				</a>
 			</li>
 			{{/notEqual}}
 
-			{{#for 1 allProductsResp.totalPages 1}}
-			<li class="page-item" >
-				<a class="page-link" href="/products?page={{this}}">
-					{{this}}
-				</a>
-			</li>
-			{{/for}}
+			{{!-- display all page numbers when totalPages is greater than one --}}
+			{{#notEqual 1 allProductsResp.totalPages}}
+				{{#for 1 allProductsResp.totalPages 1}}
+				<li class="page-item" >
+					<a class="page-link" href="?page={{this}}">
+						{{this}}
+					</a>
+				</li>
+				{{/for}}
+			{{/notEqual}}
 
+			{{!-- display next btn on all pages except for the last page --}}
 			{{#notEqual allProductsResp.totalPages allProductsResp.currentPage}}
 			<li class="page-item">
-				<a class="page-link" href="/products?page={{#sum allProductsResp.currentPage 1}}{{/sum}}">
+				<a class="page-link" href="?page={{#sum allProductsResp.currentPage 1}}{{/sum}}">
 					Next
 				</a>
 			</li>

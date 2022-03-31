@@ -14,6 +14,10 @@ var HTTP_PORT = process.env.PORT || 8080;
 var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 
+//cookie parser
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 const Sequelize = require("sequelize");
 const clientSessions = require("client-sessions");
 
@@ -377,7 +381,9 @@ const getPagingData = (data, page, limit) => {
 
 const getProducts = (query) => {
   const { page, size, product_name } = query;
-  var condition = product_name ? { product_name: { [Op.like]: `%${product_name}%` } } : null;
+  var condition = product_name ? 
+    { product_name: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('product_name')), 'LIKE', '%' + product_name.toLowerCase() + '%') } 
+    : null;
   const { limit, offset } = getPagination(page, size);
 
   return new Promise( (resolve, reject) => {
@@ -448,8 +454,33 @@ app.get("/products/:prodID", (req, res) => {
   });
 });
 
-app.get("/search", (req, res) => {
-  res.render("productSearch", { layout: false });
+// displaying products with pagination on search page
+app.get("/search", (req, res) => { 
+  const searchText = req.cookies.searchInput;
+  const query = req.query;
+  query.product_name = searchText;
+
+  getProducts(query)
+  .then(data => {
+      res.render("productSearch", {
+        layout: false,
+        finalData: {
+          searchText,
+          filteredProductsResp: data
+        }
+      });
+  })
+  .catch(err => {
+      console.log('No Products found: ' + err);
+  });
+});
+
+// when user searches from input box it enters here
+app.post("/search", (req, res) => { 
+  const searchText = req.body.searchInput;
+  res.cookie('searchInput', req.body.searchInput);
+  //for displaying products on search page
+  res.redirect('search'); 
 });
 
 //#endregion
