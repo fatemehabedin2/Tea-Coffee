@@ -82,23 +82,45 @@ app.engine(
     extname: ".hbs",
     helpers: {
       navLink: function (url, options) {
-        let liClass =
-          url == app.locals.activeRoute ? "nav-item active" : "nav-item";
-        return (
-          `<li class="` +
-          liClass +
-          `" >
-                  <a class="nav-link" href="` +
-          url +
-          `">` +
-          options.fn(this) +
-          `</a>
-              </li>`
+        let liClass = url == app.locals.activeRoute ? "nav-item active" : "nav-item";
+        return ( `<li class="` + liClass + `" >
+                  <a class="nav-link" href="` + url + `">` +
+                    options.fn(this) +
+                  `</a>
+                </li>`
         );
       },
+      for: function(from, to, incr, block) {
+        var accum = '';
+        for(var i = from; i <= to; i += incr)
+            accum += block.fn(i);
+        return accum;
+      },
+      sum: function(a, b){
+        return  parseInt(a) + b;
+      },
+      notEqual: function(lvalue, rvalue, options) {
+          if (arguments.length < 3) throw new Error('Handlebars Helper equal needs 2 parameters');
+
+          if (lvalue == rvalue) {
+              return options.inverse(this);
+          } else {
+              return options.fn(this);
+          }
+      },
+      equal: function(lvalue, rvalue, options) {
+        if (arguments.length < 3) throw new Error('Handlebars Helper equal needs 2 parameters');
+
+        if (lvalue != rvalue) {
+            return options.inverse(this);
+        } else {
+            return options.fn(this);
+        }
+    }
     },
   })
 );
+
 
 app.set("view engine", ".hbs");
 
@@ -337,19 +359,37 @@ app.get("/productInDatabase", (req, res) => {
 
 //#endregion
 
-const getProducts = (numOfProducts = -1) => {
-  let queryOptions = {
-    raw : true
-  };
 
-  if(numOfProducts > 0){
-    queryOptions.limit = numOfProducts;
-  }
+//#region Products
+const getPagination = (page, size) => {
+  const limit = size ? size : 9;
+  page--;
+  const offset = page ? page * limit : 0;
+  return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+  const { count: totalItems, rows: products } = data;
+  const currentPage = page ? page : 1;
+  const totalPages = Math.ceil(totalItems / limit);
+  return { totalItems, products, totalPages, currentPage };
+};
+
+const getProducts = (query) => {
+  const { page, size, product_name } = query;
+  var condition = product_name ? { product_name: { [Op.like]: `%${product_name}%` } } : null;
+  const { limit, offset } = getPagination(page, size);
 
   return new Promise( (resolve, reject) => {
-    Product.findAll(queryOptions)
-    .then(data => {        
-      resolve(data);
+    Product.findAndCountAll({
+      where: condition,
+      limit,
+      offset,
+      raw: true
+    })
+    .then(data => {
+      const response = getPagingData(data, page, limit);       
+      resolve(response);
     })
     .catch(err => {
         reject(err);
@@ -357,20 +397,18 @@ const getProducts = (numOfProducts = -1) => {
   } );
 }
 
-//#region Products
 app.get("/products", (req, res) => {
-  let allProducts = '';
-
-  getProducts()
+  let allProductsResp = '';
+  getProducts(req.query)
   .then(data => {
-      allProducts = data;
+      allProductsResp = data;
       return Category.findAll({raw: true});
   })
   .then(data => {
       res.render("productListing", {
         layout: false,
         finalData: {
-          allProducts: allProducts,
+          allProductsResp: allProductsResp,
           allCategories: data
         }
       });
@@ -390,7 +428,10 @@ app.get("/products/:prodID", (req, res) => {
   })
   .then(data => {
       singleProduct = data;
-      return getProducts(4);
+      return Product.findAll({
+        limit: 4,
+        raw: true
+      })
   })
   .then(relatedProducts => {
       res.render("productDetail", {

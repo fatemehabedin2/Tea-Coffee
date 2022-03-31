@@ -1,6 +1,6 @@
-{{#if allProducts}}
+{{#if allProductsResp.products}}
 	<div class="row all-products-wrap">
-		{{#each allProducts}}
+		{{#each allProductsResp.products}}
 		<div class="col-md-4">
 			{{>productListingItem product=this}}
 		</div>
@@ -8,11 +8,29 @@
 	</div>
 	<nav class="d-flex justify-content-center">
 		<ul class="pagination">
-			<li class="page-item"><a class="page-link" href="#">Previous</a></li>
-			<li class="page-item"><a class="page-link" href="#">1</a></li>
-			<li class="page-item"><a class="page-link" href="#">2</a></li>
-			<li class="page-item"><a class="page-link" href="#">3</a></li>
-			<li class="page-item"><a class="page-link" href="#">Next</a></li>
+			{{#notEqual 1 allProductsResp.currentPage}}
+			<li class="page-item">
+				<a class="page-link" href="/products?page={{#sum allProductsResp.currentPage -1}}{{/sum}}">
+					Previous
+				</a>
+			</li>
+			{{/notEqual}}
+
+			{{#for 1 allProductsResp.totalPages 1}}
+			<li class="page-item" >
+				<a class="page-link" href="/products?page={{this}}">
+					{{this}}
+				</a>
+			</li>
+			{{/for}}
+
+			{{#notEqual allProductsResp.totalPages allProductsResp.currentPage}}
+			<li class="page-item">
+				<a class="page-link" href="/products?page={{#sum allProductsResp.currentPage 1}}{{/sum}}">
+					Next
+				</a>
+			</li>
+			{{/notEqual}}
 		</ul>
 	</nav>
 {{else}}
