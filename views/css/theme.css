@@ -47,8 +47,9 @@ footer{background: var(--brown);color: #fff;}
 
 /* all products styling */
 .all-products-wrap .col-md-4{margin-bottom: 30px;}
-.all-products-wrap .card-img-top{height: 250px;width: auto;object-fit: contain;}
+.card-img-top{height: 250px;width: auto;object-fit: contain;}
 .product{min-height: 500px;}
+/* .home .product{min-height: 580px;} */
 .product .prod-name{font-size: 20px;line-height: 30px;}
 .product-price{font-weight: 700;font-size: 20px;}
 .page-link{color: var(--brown);}

@@ -162,7 +162,41 @@ const upload = multer({ storage: storage });
 
 //#region General Pages
 app.get("/", (req, res) => {
-  res.render("home", { user: req.session.user, layout: false });
+  let teaProducts = '';
+  // let coffeeProducts = '';
+
+  Product.findAll({
+      where: {
+        category_id: 1,
+      },
+      limit: 4,
+      raw: true
+  })
+  .then(data => {
+      teaProducts = data;
+      return Product.findAll({
+          where: {
+            category_id: 4,
+          },
+          limit: 4,
+          raw: true
+      })
+  })
+  .then(data => {
+    res.render("home", {
+      layout: false,
+      user: req.session.user, 
+      finalData: {
+        teaProducts,
+        coffeeProducts: data
+      }
+    });
+  })
+  .catch(err => {
+      console.log('No results returned for product with product ID ' + req.params.prodID);
+      console.log(err);
+  });
+
 });
 
 app.get("/about", (req, res) => {
