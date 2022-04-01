@@ -312,6 +312,7 @@ app.post("/login", (req, res) => {
             lastName: user.lastName,
             address: user.address,
             phone: user.phone,
+            isAdmin: user.user_role == "administrator" ? true : false
           };
           // if the user logged in, redirect to user dashboard
           res.redirect("/dashboardUser");
