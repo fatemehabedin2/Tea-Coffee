@@ -12,13 +12,13 @@
   <div class="container create-form">
     <div class="row">
       <div class="col-md-6 offset-md-3">
-        <form class="format-form">
+        <form class="format-form" method="post" action="/createProduct" enctype="multipart/form-data">
           <fieldset>
             <legend>Product Creation</legend>
             <div class="form-group">
               <div class="mb-3">
                 {{! <label for="product-name" class="form-label">Product name</label> }}
-                <input type="text" class="form-control" id="product-name" placeholder="Product name" name="product-name"
+                <input type="text" class="form-control" id="product-name" placeholder="Product name" name="product_name"
                   required />
               </div>
               
@@ -36,6 +36,9 @@
                 {{! <label for="unit_price" class="form-label">Product price</label> }}
                 <input type="text" class="form-control" id="unit_price" placeholder="Product price" name="unit_price"
                   required />
+                  {{#if message2}}
+                  <p class="error-msg">{{message}}</p>
+                  {{/if}}
               </div>
               
             </div>
@@ -65,12 +68,15 @@
               <div class="mb-3">
                 {{! <label for="discount" class="form-label">Discount percentage</label> }}
                 <input type="text" class="form-control" id="discount" name="discount"
-                  placeholder="Discount percentage" />
+                  placeholder="Discount percentage" required />
+                   {{#if message1}}
+                  <p class="error-msg">{{message}}</p>
+                  {{/if}}
               </div>
             </div>
 
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="bestseller" />
+              <input class="form-check-input" type="checkbox" id="bestseller" />
               <label class="form-check-label" for="bestseller">
                 Bestseller
               </label>
@@ -80,7 +86,7 @@
               <div class="mb-3">
                 {{! <label for="image" class="form-label">Product Image</label> }}
                 <h6>Upload product image</h6>
-                <input class="form-control-file" type="file" id="image" required/>
+                <input class="form-control-file" type="file" id="image" name="photo" required/>
               </div>
             </div>
 
