@@ -40,18 +40,17 @@
           <td>{{discount_percentage}}</td>
           <td><img src={{image}} width="100px" height="80px" </td>
           <td>
-            <form action="updateProduct" method="POST">
+            <form  method="POST" action="updateProduct">
               <input type="hidden" id="product_id" name="product_id" value={{product_id}}>
-              <button type="button" class="btn btn-warning">Update</button></a>
+              <button type="submit" class="btn btn-warning">Update</button></a>
             </form>
           </td>
 
           <td>
-             <form action="deleteProduct" method="POST">
+             <form  method="POST" action="deleteProduct">
               <input type="hidden" id="product_id" name="product_id" value={{product_id}}>
-              <button type="button" class="btn btn-danger">Delete</button></a>
+              <button type="submit" class="btn btn-danger">Delete</button></a>
             </form>
-        
           </td>
         </tr>
         {{/each}}

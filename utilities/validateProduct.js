@@ -16,7 +16,7 @@ module.exports.checkPrice = function (price) {
 module.exports.checkDiscount = function (discount) {
   var percent = Number(discount);
   if (percent !== NaN) {
-    if (percent >= 0) {
+    if (percent >= 0 && percent <= 100) {
       return true;
     } else {
       return false;
