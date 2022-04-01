@@ -46,7 +46,7 @@ footer{background: var(--brown);color: #fff;}
 .copy-txt{text-align: right;align-self: center;}
 
 /* all products styling */
-.all-products-wrap .col-md-4{margin-bottom: 30px;}
+.all-products-wrap .col-md-4, .home .products-wrap .col-prod{margin-bottom: 30px;}
 .card-img-top{height: 250px;width: auto;object-fit: contain;}
 .product{min-height: 500px;}
 /* .home .product{min-height: 580px;} */
