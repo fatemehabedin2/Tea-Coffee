@@ -25,7 +25,8 @@
 
         </div>
         <div class="col-6 col-lg-4 d-flex justify-content-end">
-          <a href="/logout" class="btn btn-outline-primary login-logout-btn"><i class="fa fa-sign-out"></i></a>
+          <a href="/dashboardAdmin" class="btn  login-logout-btn" style="color: white;">{{fName}}</a>
+          <a href="/logout" class="btn btn-outline-primary login-logout-btn"><i class="fa fa-sign-out"></i>Logout</a>
 
         </div>
       </div>
@@ -37,7 +38,6 @@
       <div class="collapse navbar-collapse justify-content-center" id="navbarToggler">
 
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-          {{#navLink '/'}} Home {{/navLink}}
 					{{#navLink '/dashboardAdmin'}} Dashboard Admin {{/navLink}}
 					{{#navLink '/createProduct'}} Product Creation {{/navLink}}
 					{{#navLink '/productInDatabase'}} Product in Database {{/navLink}}
