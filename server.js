@@ -313,12 +313,12 @@ app.post("/login", (req, res) => {
         //successful login
         let isAdmin = user.user_role == "administrator" ? true : false;
         req.session.user = {
-          email: user.email,
+          email: user.email_id,
           firstName: user.first_name,
           lastName: user.last_name,
           address: user.address,
-          phone: user.phone,
-          isAdmin: isAdmin
+          phone: user.phone_number,
+          isAdmin: isAdmin,
         };
         // if the user logged in, redirect to user dashboard
         if (isAdmin) {
@@ -433,9 +433,9 @@ app.get("/createProduct", ensureAdmin, (req, res) => {
 });
 
 const validate = require("./utilities/validateProduct");
+
 app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
-  if (validate.checkPrice(req.body.unit_price)) {
-    if (validate.checkDiscount(req.body.discount)) {
+  if (validate.checkPrice(req.body.unit_price) && validate.checkDiscount(req.body.discount)){
       sequelize.sync().then(function () {
         Product.create({
           product_name: req.body.product_name,
@@ -444,40 +444,33 @@ app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
           unit_price: Number(req.body.unit_price),
           quantity_in_stock: parseInt(req.body.quantity),
           category_id: parseInt(req.body.category),
-          bestseller: false,
-          discount_percentage: Number(req.body.discount),
+          bestseller: Boolean(req.body.bestseller),
+          discount_percentage: Number(req.body.discount)
         })
           .then(function (product) {
             console.log("success!");
-            console.log(product);
           })
           .catch(function (error) {
             console.log("something went wrong!");
             console.log(error);
           });
       });
-      res.render("productInDatabase", {
-        user: req.session.user,
-        layout: false,
-      });
-    } else {
-      res.render("createProduct", {
-        user: req.session.user,
-        message1: "Invalid Percentage",
-        layout: false,
-      });
-    }
+      res.redirect("/productInDatabase");
+    
   } else {
-    res.render("createProduct", {
+      let msg1_= validate.checkPrice(req.body.unit_price) ? null : "Invalid Price";
+      let msg2_= validate.checkDiscount(req.body.discount) ? null : "Invalid Discount";
+      let msg3_= validate.checkFile(req.file.filename) ? null : "Invalid Image";
+      res.render("createProduct", {
       user: req.session.user,
-      message2: "Invalid Price",
-      layout: false,
+      data: {msg1: msg1_, msg2: msg2_, msg3: msg3_},
+      layout: false
     });
   }
 });
 
 app.get("/updateProduct", ensureAdmin, (req, res) => {
-  res.render("updateProduct", { user: req.session.user, layout: false  });
+  res.render("updateProduct", { user: req.session.user, layout: false });
 });
 app.get("/deleteProduct", ensureAdmin, (req, res) => {
   res.render("deleteProduct", { user: req.session.user, layout: false });
@@ -705,11 +698,12 @@ function ensureLogin(req, res, next) {
 }
 
 function ensureAdmin(req, res, next) {
-  if (!req.session.user.isAdmin) {
-    //if user is not admin and want to go pages that is not allowed
+  if (!req.session.user) {
+    res.redirect("/login");
+  } else if (!req.session.user.isAdmin) {
     res.redirect("/login");
   } else {
-    next(); //do whatever you want to do
+    next(); 
   }
 }
 

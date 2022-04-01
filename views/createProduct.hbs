@@ -27,7 +27,7 @@
               <div class="mb-3">
                 {{! <label for="description" class="form-label">Product description</label> }}
                 <textarea class="form-control" id="description" rows="2" placeholder="Product description"
-                  name="description" required></textarea>
+                  name="description" required ></textarea>
               </div>
               
             </div>
@@ -36,8 +36,8 @@
                 {{! <label for="unit_price" class="form-label">Product price</label> }}
                 <input type="text" class="form-control" id="unit_price" placeholder="Product price" name="unit_price"
                   required />
-                  {{#if message2}}
-                  <p class="error-msg">{{message}}</p>
+                  {{#if data.msg1 }}
+                  <p class="error-msg">{{data.msg1}}</p>
                   {{/if}}
               </div>
               
@@ -53,7 +53,7 @@
             <div class="form-group">
               <div class="mb-3">
                 {{! <label for="category" class="form-label">Product category</label> }}
-                <select class="form-select" id="category" name="category" required>
+                <select class="form-select" id="category" name="category" required >
                   <option value="">Product category</option>
                   <option value="1">Green Tea</option>
                   <option value="2">Black Tea</option>
@@ -69,14 +69,14 @@
                 {{! <label for="discount" class="form-label">Discount percentage</label> }}
                 <input type="text" class="form-control" id="discount" name="discount"
                   placeholder="Discount percentage" required />
-                   {{#if message1}}
-                  <p class="error-msg">{{message}}</p>
+                   {{#if data.msg2}}
+                  <p class="error-msg">{{data.msg2}}</p>
                   {{/if}}
               </div>
             </div>
 
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="bestseller" />
+              <input class="form-check-input" type="checkbox" id="bestseller" name="bestseller"/>
               <label class="form-check-label" for="bestseller">
                 Bestseller
               </label>
@@ -87,6 +87,9 @@
                 {{! <label for="image" class="form-label">Product Image</label> }}
                 <h6>Upload product image</h6>
                 <input class="form-control-file" type="file" id="image" name="photo" required/>
+                {{#if data.msg3}}
+                  <p class="error-msg">{{data.msg3}}</p>
+                  {{/if}}
               </div>
             </div>
 

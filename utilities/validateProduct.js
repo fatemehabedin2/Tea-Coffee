@@ -16,7 +16,7 @@ module.exports.checkPrice = function (price) {
 module.exports.checkDiscount = function (discount) {
   var percent = Number(discount);
   if (percent !== NaN) {
-    if (percent > 0) {
+    if (percent >= 0) {
       return true;
     } else {
       return false;
@@ -42,13 +42,15 @@ module.exports.checkDesc = function (desc) {
   }
 }
 
-// module.exports.checkFile = function (filename) {
-//   if (extension !== null && extension.length > 1) {
-//     let extension = path.extname(filename).slice(1);
-//     if (extension === "jpeg" || extension === "jpg" || extension === "png") {
-//       return true;
-//     } else {
-//       return false;
-//     }
-//   }
-// }
+
+module.exports.checkFile = function (filename) {
+
+  let extension = filename.split(".").pop();
+  if (extension !== null && extension.length > 2) {
+    if (extension === "jpeg" || extension === "jpg" || extension === "png") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
