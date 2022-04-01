@@ -204,8 +204,30 @@ sequelize.sync().then(function () {
       res.redirect("/login");
 });
 
-app.get("/shoppingCart", (req, res) => {
+app.get("/shoppingCart", (req, res) => {  
+  if(req.cookies.productsAddedToCart){
+    console.log('productsAddedToCart',req.cookies.productsAddedToCart);
+  }else{
+    console.log('cart is empty');
+  }
+
   res.render("shoppingCart", { layout: false });
+});
+
+app.post("/addToCart", (req, res) => {  
+  const productToBeAddedToCart = {
+    product_id: req.body.product_id,
+    quantity: req.body.product_qty
+  }  
+  
+  let cookieValue = [];
+  // get cookie value if already present
+  if(req.cookies.productsAddedToCart){
+    cookieValue = req.cookies.productsAddedToCart;
+  }
+  cookieValue.push(productToBeAddedToCart);  
+  res.cookie('productsAddedToCart', cookieValue);
+  res.redirect('/shoppingCart');
 });
 
 //#endregion
@@ -376,29 +398,66 @@ const getPagingData = (data, page, limit) => {
   const { count: totalItems, rows: products } = data;
   const currentPage = page ? page : 1;
   const totalPages = Math.ceil(totalItems / limit);
-  return { totalItems, products, totalPages, currentPage };
+  return { totalItems, products, totalPages, currentPage};
 };
 
+let sortOptions = [
+  {
+    id: 1,
+    value: 'A-Z',
+    order: ['product_name', 'ASC'],
+    active: true
+  },
+  {
+    id: 2,
+    value: 'Z-A',
+    order: ['product_name', 'DESC'],
+    active: false
+  },
+  {
+    id: 3,
+    value: 'Price, Low to High',
+    order: ['unit_price', 'ASC'],
+    active: false
+  },
+  {
+    id: 4,
+    value: 'Price, High to Low',
+    order: ['unit_price', 'DESC'],
+    active: false
+  }
+];
+
+const makeAllSortOptionsNonActive = () => {
+  sortOptions.forEach(sortOption => {
+    sortOption.active = false;
+  })
+}
+
 const getProducts = (query) => {
-  const { page, size, product_name } = query;
-  var condition = product_name ? 
+  const { page, size, product_name, sort } = query;
+  let condition = product_name ? 
     { product_name: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('product_name')), 'LIKE', '%' + product_name.toLowerCase() + '%') } 
     : null;
-
-  // var condition = { category_id: [1] };
-
+  let order = ['product_id', 'ASC'];
+  if(sort > 1 && sort <= sortOptions.length){
+    order = sortOptions[sort-1].order;
+    makeAllSortOptionsNonActive();
+    sortOptions[sort-1].active = true;
+  }
 
   const { limit, offset } = getPagination(page, size);
 
   return new Promise( (resolve, reject) => {
     Product.findAndCountAll({
       where: condition,
+      order: [order],
       limit,
       offset,
       raw: true
     })
     .then(data => {
-      const response = getPagingData(data, page, limit);       
+      const response = getPagingData(data, page, limit, sort);       
       resolve(response);
     })
     .catch(err => {
@@ -407,58 +466,28 @@ const getProducts = (query) => {
   } );
 }
 
+
 app.get("/products", (req, res) => {
   let allProductsResp = '';
   getProducts(req.query)
   .then(data => {
       allProductsResp = data;
+      // console.log(allProductsResp)
       return Category.findAll({raw: true});
   })
   .then(data => {
       res.render("productListing", {
         layout: false,
         finalData: {
-          allProductsResp: allProductsResp,
-          allCategories: data
+          allProductsResp,
+          allCategories: data,
+          sortOptions
         }
       });
   })
   .catch(err => {
       console.log('No Products found: ' + err);
   });
-});
-
-app.post("/products", (req, res) => {
-  const category_id = [];
-  for (const key in req.body) {
-    category_id.push(key);
-  }
-  
-  console.log(category_id);
-
-  res.query.categories=category_id;
-
-  res.render('productListing');
-  
-  // console.log(req.body)
-  // let allProductsResp = '';
-  // getProducts(req.query)
-  // .then(data => {
-  //     allProductsResp = data;
-  //     return Category.findAll({raw: true});
-  // })
-  // .then(data => {
-  //     res.render("productListing", {
-  //       layout: false,
-  //       finalData: {
-  //         allProductsResp: allProductsResp,
-  //         allCategories: data
-  //       }
-  //     });
-  // })
-  // .catch(err => {
-  //     console.log('No Products found: ' + err);
-  // });
 });
 
 app.get("/products/:prodID", (req, res) => {
