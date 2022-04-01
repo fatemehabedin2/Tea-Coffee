@@ -167,9 +167,8 @@ const upload = multer({ storage: storage });
 
 //#region General Pages
 app.get("/", (req, res) => {
+  //getting 4 products of tea category and are bestseller 
   let teaProducts = "";
-  // let coffeeProducts = '';
-
   Product.findAll({
     where: {
       category_id: [1, 2, 3],
@@ -180,6 +179,7 @@ app.get("/", (req, res) => {
   })
     .then((data) => {
       teaProducts = data;
+      //getting 4 products of coffe category and are bestseller 
       return Product.findAll({
         where: {
           category_id: [4, 5],
@@ -275,8 +275,13 @@ app.post("/addToCart", (req, res) => {
   if (req.cookies.productsAddedToCart) {
     cookieValue = req.cookies.productsAddedToCart;
   }
+  // push newly product which needs to be added into the cart
   cookieValue.push(productToBeAddedToCart);
+
+  // set cookie
   res.cookie("productsAddedToCart", cookieValue);
+
+  // redirect to shoppingCart page
   res.redirect("/shoppingCart");
 });
 
@@ -340,6 +345,7 @@ app.get("/logout", (req, res) => {
   req.session.reset();
   res.redirect("/");
 });
+
 app.get("/forgotpassword", (req, res) => {
   res.render("forgotPassword", { layout: false });
 });
@@ -559,12 +565,12 @@ const getProducts = (query) => {
   const { page, size, product_name, sort } = query;
   let condition = product_name
     ? {
-        product_name: Sequelize.where(
-          Sequelize.fn("LOWER", Sequelize.col("product_name")),
-          "LIKE",
-          "%" + product_name.toLowerCase() + "%"
-        ),
-      }
+      product_name: Sequelize.where(
+        Sequelize.fn("LOWER", Sequelize.col("product_name")),
+        "LIKE",
+        "%" + product_name.toLowerCase() + "%"
+      ),
+    }
     : null;
   let order = ["product_id", "ASC"];
   if (sort > 1 && sort <= sortOptions.length) {

@@ -36,6 +36,11 @@ header .btn-outline-primary:hover{background: transparent !important; border-col
 .search-col input:-ms-input-placeholder {color: rgba(255,255,255,.5);}
 .search-col input::-ms-input-placeholder {color: rgba(255,255,255,.5);}
 
+/* home banner styling */
+.home #mid-wrap{padding-top: 0;}
+.home-banner-wrap{background: #BA9169}
+.home-banner{height: 500px;background: url(../images/home-banner.jpg) no-repeat center center;}
+
 /* footer styling */
 footer{background: var(--brown);color: #fff;}
 .footer-icons-wrap{padding: 25px 0;}
@@ -49,7 +54,6 @@ footer{background: var(--brown);color: #fff;}
 .all-products-wrap .col-md-4, .home .products-wrap .col-prod{margin-bottom: 30px;}
 .card-img-top{height: 250px;width: auto;object-fit: contain;}
 .product{min-height: 500px;}
-/* .home .product{min-height: 580px;} */
 .product .prod-name{font-size: 20px;line-height: 30px;}
 .product-price{font-weight: 700;font-size: 20px;}
 .page-link{color: var(--brown);}
@@ -72,6 +76,9 @@ footer{background: var(--brown);color: #fff;}
     header .main-navbar ul a{text-align: center;}
     .search-col{order: 3;}
     .search-col form{margin: 10px 0 0;}
+
+    /* banner  */
+    .home-banner{height: 300px;background-size: cover;}
 
     /* footer styling */
     .footer-col h5{font-size: 15px;line-height: 22px;}
