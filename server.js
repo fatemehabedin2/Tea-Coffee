@@ -301,7 +301,9 @@ app.post("/login", (req, res) => {
       }
        else    // if could find the email (user exist)
       {
-        if (password == user.password) 
+        console.log(user.email_id,user.first_name, password, user.pass_word );
+
+        if (password == user.pass_word) 
         {
           //successful login
           req.session.user = {           
@@ -313,8 +315,7 @@ app.post("/login", (req, res) => {
           };
           // if the user logged in, redirect to user dashboard
           res.redirect("/dashboardUser");
-          console.log(user.email_id,user.first_name );
-
+          
         } else {
           res.render("login", {
             errorMsg: "PASSWORD does not match",
@@ -336,7 +337,7 @@ app.get("/forgotpassword", (req, res) => {
 //#endregion
 
 //#region AuthorizedUsers
-app.get("/dashboardUser", (req, res) => {
+app.get("/dashboardUser", ensureLogin, (req, res) => {
   var teaProducts = [];
   var coffeeProducts = [];
 
