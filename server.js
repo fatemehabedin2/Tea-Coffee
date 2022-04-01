@@ -87,40 +87,40 @@ app.engine(
     helpers: {
       navLink: function (url, options) {
         let liClass = url == app.locals.activeRoute ? "nav-item active" : "nav-item";
-        return ( `<li class="` + liClass + `" >
+        return (`<li class="` + liClass + `" >
                   <a class="nav-link" href="` + url + `">` +
-                    options.fn(this) +
-                  `</a>
+          options.fn(this) +
+          `</a>
                 </li>`
         );
       },
-      for: function(from, to, incr, block) {
+      for: function (from, to, incr, block) {
         var accum = '';
-        for(var i = from; i <= to; i += incr)
-            accum += block.fn(i);
+        for (var i = from; i <= to; i += incr)
+          accum += block.fn(i);
         return accum;
       },
-      sum: function(a, b){
-        return  parseInt(a) + b;
+      sum: function (a, b) {
+        return parseInt(a) + b;
       },
-      notEqual: function(lvalue, rvalue, options) {
-          if (arguments.length < 3) throw new Error('Handlebars Helper equal needs 2 parameters');
+      notEqual: function (lvalue, rvalue, options) {
+        if (arguments.length < 3) throw new Error('Handlebars Helper equal needs 2 parameters');
 
-          if (lvalue == rvalue) {
-              return options.inverse(this);
-          } else {
-              return options.fn(this);
-          }
+        if (lvalue == rvalue) {
+          return options.inverse(this);
+        } else {
+          return options.fn(this);
+        }
       },
-      equal: function(lvalue, rvalue, options) {
+      equal: function (lvalue, rvalue, options) {
         if (arguments.length < 3) throw new Error('Handlebars Helper equal needs 2 parameters');
 
         if (lvalue != rvalue) {
-            return options.inverse(this);
+          return options.inverse(this);
         } else {
-            return options.fn(this);
+          return options.fn(this);
         }
-    }
+      }
     },
   })
 );
@@ -166,36 +166,38 @@ app.get("/", (req, res) => {
   // let coffeeProducts = '';
 
   Product.findAll({
-      where: {
-        category_id: 1,
-      },
-      limit: 4,
-      raw: true
+    where: {
+      category_id: [1, 2, 3],
+      bestseller: true
+    },
+    limit: 4,
+    raw: true
   })
-  .then(data => {
+    .then(data => {
       teaProducts = data;
       return Product.findAll({
-          where: {
-            category_id: 4,
-          },
-          limit: 4,
-          raw: true
+        where: {
+          category_id: [4, 5],
+          bestseller: true
+        },
+        limit: 4,
+        raw: true
       })
-  })
-  .then(data => {
-    res.render("home", {
-      layout: false,
-      user: req.session.user, 
-      finalData: {
-        teaProducts,
-        coffeeProducts: data
-      }
-    });
-  })
-  .catch(err => {
+    })
+    .then(data => {
+      res.render("home", {
+        layout: false,
+        user: req.session.user,
+        finalData: {
+          teaProducts,
+          coffeeProducts: data
+        }
+      });
+    })
+    .catch(err => {
       console.log('No results returned for product with product ID ' + req.params.prodID);
       console.log(err);
-  });
+    });
 
 });
 
@@ -246,28 +248,28 @@ app.post("/register", (req, res) => {
   res.redirect("/login");
 });
 
-app.get("/shoppingCart", (req, res) => {  
-  if(req.cookies.productsAddedToCart){
-    console.log('productsAddedToCart',req.cookies.productsAddedToCart);
-  }else{
+app.get("/shoppingCart", (req, res) => {
+  if (req.cookies.productsAddedToCart) {
+    console.log('productsAddedToCart', req.cookies.productsAddedToCart);
+  } else {
     console.log('cart is empty');
   }
 
   res.render("shoppingCart", { layout: false });
 });
 
-app.post("/addToCart", (req, res) => {  
+app.post("/addToCart", (req, res) => {
   const productToBeAddedToCart = {
     product_id: req.body.product_id,
     quantity: req.body.product_qty
-  }  
-  
+  }
+
   let cookieValue = [];
   // get cookie value if already present
-  if(req.cookies.productsAddedToCart){
+  if (req.cookies.productsAddedToCart) {
     cookieValue = req.cookies.productsAddedToCart;
   }
-  cookieValue.push(productToBeAddedToCart);  
+  cookieValue.push(productToBeAddedToCart);
   res.cookie('productsAddedToCart', cookieValue);
   res.redirect('/shoppingCart');
 });
@@ -290,101 +292,89 @@ app.post("/login", (req, res) => {
     });
   }
 
-  User.findOne({ where: { email_id: email } }).then((user) => 
-  {
-      if (!email)       // if could not find the email (no user match)
-      {
-        res.render("login", {
-          errorMsg: "Email does not match",
-          layout: false,
-        });  
-      }
-       else    // if could find the email (user exist)
-      {
-        console.log(user.email_id,user.first_name, password, user.pass_word );
-
-        if (password == user.pass_word) 
-        {
-          //successful login
-          req.session.user = {           
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            address: user.address,
-            phone: user.phone,
-            isAdmin: user.user_role == "administrator" ? true : false
-          };
-          // if the user logged in, redirect to user dashboard
-          res.redirect("/dashboardUser");
-          
-        } else {
-          res.render("login", {
-            errorMsg: "PASSWORD does not match",
-            layout: false,
-          });
-        }
-      }
-    });
-
-
-app.get("/logout", (req, res) => {
-  req.session.reset();
-  res.redirect("/");
-});
-app.get("/forgotpassword", (req, res) => {
-  res.render("forgotPassword", { layout: false });
-});
-
-//#endregion
-
-//#region AuthorizedUsers
-app.get("/dashboardUser", ensureLogin, (req, res) => {
-  var teaProducts = [];
-  var coffeeProducts = [];
-
-  sequelize.sync().then(function () {
-    Product.findAll({
-      where: {
-        bestseller: true,
-        category_id: [1, 2, 3],
-      },
-    }).then(function (data) {
-      for (var i = 0; i < 4; i++) {
-        teaProducts.push({
-          product_id: data[i].product_id,
-          product_name: data[i].product_name,
-          image: data[i].image,
-          unit_price: data[i].unit_price,
-        });
-      }
-
-      sequelize.sync().then(function () {
-        Product.findAll({
-          where: {
-            bestseller: true,
-            category_id: [4, 5],
-          },
-        }).then(function (data) {
-          for (var i = 0; i < 4; i++) {
-            coffeeProducts.push({
-              product_id: data[i].product_id,
-              product_name: data[i].product_name,
-              image: data[i].image,
-              unit_price: data[i].unit_price,
-            });
-          }
-          res.render("dashboardUser", {
-            user: req.session.user,
-            data1: teaProducts,
-            data2: coffeeProducts,
-            layout: false,
-          });
-        });
+  User.findOne({ where: { email_id: email } }).then((user) => {
+    if (!email)       // if could not find the email (no user match)
+    {
+      res.render("login", {
+        errorMsg: "Email does not match",
+        layout: false,
       });
-    });
+    }
+    else    // if could find the email (user exist)
+    {
+      console.log(user.email_id, user.first_name, password, user.pass_word);
+
+      if (password == user.pass_word) {
+        //successful login
+        req.session.user = {
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          address: user.address,
+          phone: user.phone,
+          isAdmin: user.user_role == "administrator" ? true : false
+        };
+        // if the user logged in, redirect to user dashboard
+        res.redirect("/dashboardUser");
+
+      } else {
+        res.render("login", {
+          errorMsg: "PASSWORD does not match",
+          layout: false,
+        });
+      }
+    }
   });
 });
-});
+
+  app.get("/logout", (req, res) => {
+    req.session.reset();
+    res.redirect("/");
+  });
+  app.get("/forgotpassword", (req, res) => {
+    res.render("forgotPassword", { layout: false });
+  });
+
+  //#endregion
+
+  //#region AuthorizedUsers
+  app.get("/dashboardUser",  (req, res) => {
+    let teaProducts = '';
+    Product.findAll({
+      where: {
+        category_id: [1, 2, 3],
+        bestseller: true
+      },
+      limit: 4,
+      raw: true
+    })
+      .then(data => {
+        teaProducts = data;
+        return Product.findAll({
+          where: {
+            category_id: [4, 5],
+            bestseller: true
+          },
+          limit: 4,
+          raw: true
+        })
+      })
+      .then(data => {
+        res.render("dashboardUser", {
+          layout: false,
+          user: req.session.user,
+          finalData: {
+            teaProducts,
+            coffeeProducts: data
+          }
+        });
+      })
+      .catch(err => {
+        console.log('No results returned');
+        console.log(err);
+      });
+  });
+
 
 app.get("/profile", ensureLogin, (req, res) => {
   res.render("profile", { user: req.session.user, layout: false });
@@ -529,7 +519,7 @@ const getPagingData = (data, page, limit) => {
   const { count: totalItems, rows: products } = data;
   const currentPage = page ? page : 1;
   const totalPages = Math.ceil(totalItems / limit);
-  return { totalItems, products, totalPages, currentPage};
+  return { totalItems, products, totalPages, currentPage };
 };
 
 let sortOptions = [
@@ -567,19 +557,19 @@ const makeAllSortOptionsNonActive = () => {
 
 const getProducts = (query) => {
   const { page, size, product_name, sort } = query;
-  let condition = product_name ? 
-    { product_name: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('product_name')), 'LIKE', '%' + product_name.toLowerCase() + '%') } 
+  let condition = product_name ?
+    { product_name: Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('product_name')), 'LIKE', '%' + product_name.toLowerCase() + '%') }
     : null;
   let order = ['product_id', 'ASC'];
-  if(sort > 1 && sort <= sortOptions.length){
-    order = sortOptions[sort-1].order;
+  if (sort > 1 && sort <= sortOptions.length) {
+    order = sortOptions[sort - 1].order;
     makeAllSortOptionsNonActive();
-    sortOptions[sort-1].active = true;
+    sortOptions[sort - 1].active = true;
   }
 
   const { limit, offset } = getPagination(page, size);
 
-  return new Promise( (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     Product.findAndCountAll({
       where: condition,
       order: [order],
@@ -587,26 +577,26 @@ const getProducts = (query) => {
       offset,
       raw: true
     })
-    .then(data => {
-      const response = getPagingData(data, page, limit, sort);       
-      resolve(response);
-    })
-    .catch(err => {
+      .then(data => {
+        const response = getPagingData(data, page, limit, sort);
+        resolve(response);
+      })
+      .catch(err => {
         reject(err);
-    });
-  } );
+      });
+  });
 }
 
 
 app.get("/products", (req, res) => {
   let allProductsResp = '';
   getProducts(req.query)
-  .then(data => {
+    .then(data => {
       allProductsResp = data;
       // console.log(allProductsResp)
-      return Category.findAll({raw: true});
-  })
-  .then(data => {
+      return Category.findAll({ raw: true });
+    })
+    .then(data => {
       res.render("productListing", {
         layout: false,
         finalData: {
@@ -615,28 +605,28 @@ app.get("/products", (req, res) => {
           sortOptions
         }
       });
-  })
-  .catch(err => {
+    })
+    .catch(err => {
       console.log('No Products found: ' + err);
-  });
+    });
 });
 
 app.get("/products/:prodID", (req, res) => {
   let singleProduct = '';
   Product.findOne({
-      where: {
-        product_id: req.params.prodID
-      },
-      raw: true
+    where: {
+      product_id: req.params.prodID
+    },
+    raw: true
   })
-  .then(data => {
+    .then(data => {
       singleProduct = data;
       return Product.findAll({
         limit: 4,
         raw: true
       })
-  })
-  .then(relatedProducts => {
+    })
+    .then(relatedProducts => {
       res.render("productDetail", {
         layout: false,
         finalData: {
@@ -644,22 +634,22 @@ app.get("/products/:prodID", (req, res) => {
           relatedProducts: relatedProducts
         }
       });
-  })
-  .catch(err => {
+    })
+    .catch(err => {
       console.log('No results returned for product with product ID ' + req.params.prodID);
       console.log(err);
-  });
+    });
 });
 
 // displaying products with pagination on search page
-app.get("/search", (req, res) => { 
+app.get("/search", (req, res) => {
   const query = req.query;
   const searchText = (req.query.searchTerm) ? req.query.searchTerm : req.body.searchTerm;
 
-  if(searchText !== undefined){
+  if (searchText !== undefined) {
     query.product_name = searchText;
     getProducts(query)
-    .then(data => {
+      .then(data => {
         res.render("productSearch", {
           layout: false,
           finalData: {
@@ -667,11 +657,11 @@ app.get("/search", (req, res) => {
             filteredProductsResp: data
           }
         });
-    })
-    .catch(err => {
+      })
+      .catch(err => {
         console.log('No Products found: ' + err);
-    });
-  }else{
+      });
+  } else {
     res.render("productSearch", {
       layout: false,
       finalData: {
