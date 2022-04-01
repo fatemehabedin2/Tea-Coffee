@@ -483,7 +483,7 @@ app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
 });
 
 app.get("/updateProduct", ensureAdmin, (req, res) => {
-  res.render("updateProduct", { user: req.session.user, layout: false  });
+  res.render("updateProduct", { user: req.session.user, layout: false });
 });
 app.get("/deleteProduct", ensureAdmin, (req, res) => {
   res.render("deleteProduct", { user: req.session.user, layout: false });
@@ -572,12 +572,12 @@ const getProducts = (query) => {
   const { page, size, product_name, sort } = query;
   let condition = product_name
     ? {
-        product_name: Sequelize.where(
-          Sequelize.fn("LOWER", Sequelize.col("product_name")),
-          "LIKE",
-          "%" + product_name.toLowerCase() + "%"
-        ),
-      }
+      product_name: Sequelize.where(
+        Sequelize.fn("LOWER", Sequelize.col("product_name")),
+        "LIKE",
+        "%" + product_name.toLowerCase() + "%"
+      ),
+    }
     : null;
   let order = ["product_id", "ASC"];
   if (sort > 1 && sort <= sortOptions.length) {
