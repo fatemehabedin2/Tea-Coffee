@@ -1,4 +1,3 @@
-// const Sequelize = require('sequelize');
 
 // Define a "User" model
 

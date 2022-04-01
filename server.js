@@ -1,6 +1,6 @@
 //#region COMMENT HEADER
 /* Author: Group 1
-   Date: March 26,2022
+   Date: April 1,2022
    Title: Project Phase 3
 */
 //#endregion
@@ -136,7 +136,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// const clientSessions = require("client-sessions");
+
 app.use(
   clientSessions({
     cookieName: "session",
@@ -290,26 +290,31 @@ app.post("/login", (req, res) => {
     });
   }
 
-  UserModel.findOne({ where: { email: email } })
-    .exec()
-    .then((usr) => {
-      if (!email) {
+  User.findOne({ where: { email_id: email } }).then((user) => 
+  {
+      if (!email)       // if could not find the email (no user match)
+      {
         res.render("login", {
           errorMsg: "Email does not match",
           layout: false,
-        });
-      } else {
-        if (password == usr.password) {
+        });  
+      }
+       else    // if could find the email (user exist)
+      {
+        if (password == user.password) 
+        {
           //successful login
-          req.session.user = {
-            // if the user logged in, redirect to user dashboard
-            email: usr.email,
-            firstName: usr.firstName,
-            lastName: usr.lastName,
-            address: usr.address,
-            phone: usr.phone,
+          req.session.user = {           
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            address: user.address,
+            phone: user.phone,
           };
+          // if the user logged in, redirect to user dashboard
           res.redirect("/dashboardUser");
+          console.log(user.email_id,user.first_name );
+
         } else {
           res.render("login", {
             errorMsg: "PASSWORD does not match",
@@ -319,13 +324,6 @@ app.post("/login", (req, res) => {
       }
     });
 
-  // if(!(email == process.env.EMAIL)){
-  //   return res.render("login", {errorMsg:"Email does not match", layout: false });
-  // }
-  // if(!(password == process.env.PASSWORD)){
-  //   return res.render("login", {errorMsg:"PASSWORD does not match", layout: false });
-  // }
-});
 
 app.get("/logout", (req, res) => {
   req.session.reset();
@@ -341,6 +339,7 @@ app.get("/forgotpassword", (req, res) => {
 app.get("/dashboardUser", (req, res) => {
   var teaProducts = [];
   var coffeeProducts = [];
+
   sequelize.sync().then(function () {
     Product.findAll({
       where: {
@@ -356,6 +355,7 @@ app.get("/dashboardUser", (req, res) => {
           unit_price: data[i].unit_price,
         });
       }
+
       sequelize.sync().then(function () {
         Product.findAll({
           where: {
@@ -381,6 +381,7 @@ app.get("/dashboardUser", (req, res) => {
       });
     });
   });
+});
 });
 
 app.get("/profile", ensureLogin, (req, res) => {
