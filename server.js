@@ -451,11 +451,7 @@ app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
     bestseller: Boolean(req.body.bestseller),
     discount_percentage: req.body.discount
   }
-  if (
-    validate.checkPrice(req.body.unit_price) &&
-    validate.checkDiscount(req.body.discount) &&
-    validate.checkFile(req.file.filename)
-  ) {
+  if (validate.validProduct(req.body.product_name, req.body.description, req.body.unit_price, req.body.unit_price, req.file.filename)) {
     sequelize.sync().then(function () {
       Product.create({
         product_name: req.body.product_name,
@@ -502,7 +498,6 @@ app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
       .catch((err) => {
         console.log("No results returned");
       });
-
   }
 });
 
@@ -548,25 +543,21 @@ app.post("/updateProduct", ensureAdmin, (req, res) => {
 });
 
 app.post("/update", ensureAdmin, upload.single("photo"), (req, res) => {
-  let img = req.file ? "images/" + req.file.filename : req.body.photo;
-  if (
-    validate.checkPrice(req.body.unit_price) &&
-    validate.checkDiscount(req.body.discount)
-  ) {
+  let img = req.file ? "images/" + req.file.filename : req.body.img1;
+  if (validate.validProduct(req.body.product_name, req.body.description, req.body.unit_price, req.body.unit_price, img)) {
     sequelize
       .sync()
       .then(function () {
-        Product.update(
-          {
-            product_name: req.body.product_name,
-            description: req.body.description,
-            image: img,
-            unit_price: Number(req.body.unit_price),
-            quantity_in_stock: parseInt(req.body.quantity),
-            category_id: parseInt(req.body.category),
-            bestseller: Boolean(req.body.bestseller),
-            discount_percentage: Number(req.body.discount),
-          },
+        Product.update({
+          product_name: req.body.product_name,
+          description: req.body.description,
+          image: img,
+          unit_price: Number(req.body.unit_price),
+          quantity_in_stock: parseInt(req.body.quantity),
+          category_id: parseInt(req.body.category),
+          bestseller: Boolean(req.body.bestseller),
+          discount_percentage: Number(req.body.discount),
+        },
           {
             where: { product_id: Number(req.body.product_id) },
           }
@@ -585,7 +576,7 @@ app.post("/update", ensureAdmin, upload.single("photo"), (req, res) => {
     let msg2_ = validate.checkDiscount(req.body.discount)
       ? null
       : "Invalid Discount";
-
+    let msg3_ = validate.checkFile(img) ? null : "Invalid Image";
     var id_ = Number(req.body.product_id);
     var product = {};
     sequelize.sync().then(function () {
@@ -608,7 +599,7 @@ app.post("/update", ensureAdmin, upload.single("photo"), (req, res) => {
               let category = data_;
               res.render("updateProduct", {
                 user: req.session.user,
-                data: { product, category, msg1: msg1_, msg2: msg2_ },
+                data: { product, category, msg1: msg1_, msg2: msg2_, msg3: msg3_ },
                 layout: false,
               });
             })
@@ -617,7 +608,7 @@ app.post("/update", ensureAdmin, upload.single("photo"), (req, res) => {
             });
         })
         .catch((err) => {
-          console.log("No results returned for product with product ID " + id_);
+          console.log("No results returned ");
         });
     });
   }
@@ -637,13 +628,13 @@ app.get("/dashboardAdmin", ensureAdmin, (req, res) => {
 });
 
 app.get("/productInDatabase", ensureAdmin, (req, res) => {
-  var productList=[];
+  var productList = [];
   sequelize.sync().then(function () {
     Product.findAll({
       raw: true
     })
       .then(function (products) {
-          res.render("productInDatabase", {
+        res.render("productInDatabase", {
           user: req.session.user,
           data: products,
           layout: false,

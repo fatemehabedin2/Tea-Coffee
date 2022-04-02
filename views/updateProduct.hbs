@@ -118,16 +118,17 @@
                 <div class="col-sm-9">
                   <img src={{data.product.image}} alt="product image" width="150px" height="130px"/>
                 </div>
-                <input class="form-control-file" type="file" id="image" name="photo" value="{{data.product.image}}"/>
-
+                <input class="form-control-file" type="file" id="image" name="photo" accept=".jpeg,.png,.jpg"/>
+                 {{#if data.msg3}}
+                  <p class="error-msg">{{data.msg3}}</p>
+                  {{/if}}
+                   <input name="img1" type="hidden" id="img1" value="{{data.product.image}}">
               </div>
             </div>
 
             <br />
             <div class="form-group btn-form">
-              <button type="reset" class="btn btn-primary in-forms">CLEAR</button>
               <button type="submit" class="btn btn-primary in-forms">UPDATE</button>
-
             </div>
             <br />
           </fieldset>

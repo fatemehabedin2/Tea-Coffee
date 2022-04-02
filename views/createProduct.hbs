@@ -98,7 +98,7 @@
               <div class="mb-3">
                 {{! <label for="image" class="form-label">Product Image</label> }}
                 <h6>Upload product image</h6>
-                <input class="form-control-file" type="file" id="image" name="photo" required/>
+                <input class="form-control-file" type="file" id="image" name="photo" accept=".jpeg,.png,.jpg" required/>
                 {{#if data.msg3}}
                   <p class="error-msg">{{data.msg3}}</p>
                   {{/if}}

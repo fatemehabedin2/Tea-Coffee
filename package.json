@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-to-file": "npm run test > submission/test.log 2>&1",
+    "test": "jest",
     "start": "node server.js"
   },
   "author": "Group 1 Wonder Women",
