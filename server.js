@@ -441,7 +441,16 @@ app.get("/createProduct", ensureAdmin, (req, res) => {
 const validate = require("./utilities/validateProduct");
 
 app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
- 
+  let product = {
+    product_name: req.body.product_name,
+    description: req.body.description,
+    image: "images/" + req.file.filename,
+    unit_price: req.body.unit_price,
+    quantity_in_stock: req.body.quantity,
+    category_id: req.body.category,
+    bestseller: Boolean(req.body.bestseller),
+    discount_percentage: req.body.discount
+  }
   if (
     validate.checkPrice(req.body.unit_price) &&
     validate.checkDiscount(req.body.discount) &&
@@ -456,7 +465,7 @@ app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
         quantity_in_stock: parseInt(req.body.quantity),
         category_id: parseInt(req.body.category),
         bestseller: Boolean(req.body.bestseller),
-        discount_percentage: Number(req.body.discount),
+        discount_percentage: Number(req.body.discount)
       })
         .then(function (product) {
           console.log("success!");
@@ -475,11 +484,25 @@ app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
       ? null
       : "Invalid Discount";
     let msg3_ = validate.checkFile(req.file.filename) ? null : "Invalid Image";
-    res.render("createProduct", {
-      user: req.session.user,
-      data: { msg1: msg1_, msg2: msg2_, msg3: msg3_ },
-      layout: false,
-    });
+    Category.findOne({
+      attributes: ["category_type"],
+      where: {
+        category_id: parseInt(req.body.category)
+      },
+      raw: true,
+    })
+      .then(function (data_) {
+        let category = data_;
+        res.render("createProduct", {
+          user: req.session.user,
+          data: { product, category, msg1: msg1_, msg2: msg2_, msg3: msg3_ },
+          layout: false,
+        });
+      })
+      .catch((err) => {
+        console.log("No results returned");
+      });
+
   }
 });
 
@@ -502,7 +525,7 @@ app.post("/updateProduct", ensureAdmin, (req, res) => {
         Category.findOne({
           attributes: ["category_type"],
           where: {
-            category_id: data.category_id,
+            category_id: data.category_id
           },
           raw: true,
         })
@@ -563,44 +586,50 @@ app.post("/update", ensureAdmin, upload.single("photo"), (req, res) => {
       ? null
       : "Invalid Discount";
 
-      var id_ = Number(req.body.product_id);
-      var product = {};
-      sequelize.sync().then(function () {
-        Product.findOne({
-          where: {
-            product_id: id_,
-          },
-          raw: true,
-        })
-          .then(function (data) {
-            product = data;
-            Category.findOne({
-              attributes: ["category_type"],
-              where: {
-                category_id: data.category_id,
-              },
-              raw: true,
-            })
-              .then(function (data_) {
-                let category = data_;
-                res.render("updateProduct", {
-                  user: req.session.user,
-                  data: { product, category, msg1: msg1_, msg2: msg2_},
-                  layout: false,
-                });
-              })
-              .catch((err) => {
-                console.log("No results returned");
-              });
+    var id_ = Number(req.body.product_id);
+    var product = {};
+    sequelize.sync().then(function () {
+      Product.findOne({
+        where: {
+          product_id: id_,
+        },
+        raw: true,
+      })
+        .then(function (data) {
+          product = data;
+          Category.findOne({
+            attributes: ["category_type"],
+            where: {
+              category_id: data.category_id,
+            },
+            raw: true,
           })
-          .catch((err) => {
-            console.log("No results returned for product with product ID " + id_);
-          });
-      }); 
+            .then(function (data_) {
+              let category = data_;
+              res.render("updateProduct", {
+                user: req.session.user,
+                data: { product, category, msg1: msg1_, msg2: msg2_ },
+                layout: false,
+              });
+            })
+            .catch((err) => {
+              console.log("No results returned");
+            });
+        })
+        .catch((err) => {
+          console.log("No results returned for product with product ID " + id_);
+        });
+    });
   }
 });
 
 app.get("/deleteProduct", ensureAdmin, (req, res) => {
+  res.render("deleteProduct", { user: req.session.user, layout: false });
+});
+app.post("/deleteProduct", ensureAdmin, (req, res) => {
+  res.render("deleteProduct", { user: req.session.user, layout: false });
+});
+app.post("/delete", ensureAdmin, (req, res) => {
   res.render("deleteProduct", { user: req.session.user, layout: false });
 });
 app.get("/dashboardAdmin", ensureAdmin, (req, res) => {
@@ -608,21 +637,20 @@ app.get("/dashboardAdmin", ensureAdmin, (req, res) => {
 });
 
 app.get("/productInDatabase", ensureAdmin, (req, res) => {
-  var products = [];
+  var productList=[];
   sequelize.sync().then(function () {
     Product.findAll({
-      raw: true,
+      raw: true
     })
-      .then(function (data) {
-        products = data;
-        res.render("productInDatabase", {
+      .then(function (products) {
+          res.render("productInDatabase", {
           user: req.session.user,
           data: products,
           layout: false,
         });
       })
       .catch((err) => {
-        console.log("No results returned");
+        console.log("No results returned.");
       });
   });
 });
@@ -681,12 +709,12 @@ const getProducts = (query) => {
   const { page, size, product_name, sort } = query;
   let condition = product_name
     ? {
-        product_name: Sequelize.where(
-          Sequelize.fn("LOWER", Sequelize.col("product_name")),
-          "LIKE",
-          "%" + product_name.toLowerCase() + "%"
-        ),
-      }
+      product_name: Sequelize.where(
+        Sequelize.fn("LOWER", Sequelize.col("product_name")),
+        "LIKE",
+        "%" + product_name.toLowerCase() + "%"
+      ),
+    }
     : null;
   let order = ["product_id", "ASC"];
   if (sort > 1 && sort <= sortOptions.length) {
