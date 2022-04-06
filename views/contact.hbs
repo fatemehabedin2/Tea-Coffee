@@ -34,15 +34,33 @@
                         <div class="container-lg my-5">
                             <div class="text-center">
                                 <h2> Contact Form</h2>
+
+                                {{#if errorMsg}}
+                                <h5>{{errorMsg}}</h5>
+                                {{else}}
+                                <h5>{{successMsg}}</h5>
+                                {{/if}}
+                                
                             </div>
                             <div class="row justify-content-center my-5">
-                                <form>
+                                <form method="post" action="/contact">
+
                                     <label for="name" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="name" placeholder="YourName" />
+                                    {{#if user}}
+                                    <input type="text" class="form-control" name="name" id="name" value="{{user.firstName}} {{user.lastName}}" />
+                                    {{else}}
+                                    <input type="text" class="form-control" name="name" id="name" placeholder="YourName"  />
+                                    {{/if}}
+
                                     <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" placeholder="Your Email Address" />
+                                    {{#if user}}
+                                    <input type="email" class="form-control" name="email" id="email" value="{{user.email}}" />
+                                    {{else}}
+                                    <input type="email" class="form-control" name="email" id="email" placeholder="Your Email Address" />
+                                    {{/if}}
+                                    
                                     <div class="form-floating mb-4 mt-5">
-                                        <textarea class="form-control" id="message" style="height: 140px;"> </textarea>
+                                        <input type="textarea" class="form-control" name="message" style="height: 140px;"> </textarea>
                                         <label for="message">Type Your Message Here:</label>
                                     </div>
                                     <div class="mb-4 text-center">
