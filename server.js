@@ -88,6 +88,7 @@ app.use(express.static("views"));
 app.use(express.static("public"));
 
 const { engine } = require("express-handlebars");
+const bcrypt = require("bcryptjs");
 
 // added custome helper
 app.engine(
@@ -232,20 +233,21 @@ app.post("/contact", (req, res) => {
   const email = req.body.email;
   const message = req.body.message;
 
-  if (!name|| !email || !message ) 
-  {
+  if (!name || !email || !message) {
     return res.render("contact", {
       errorMsg: "All fields are required",
       layout: false,
     });
   }
-    sequelize.sync().then(function () {
+  sequelize
+    .sync()
+    .then(function () {
       // create a new "Contact" and add it to the database
       Contact_message.create({
-        name:name, 
+        name: name,
         email_id: email,
-        message_text:message,
-        message_timestamp: new Date() 
+        message_text: message,
+        message_timestamp: new Date(),
       })
         .then(function (Contact_message) {
           // you can now access the newly created Contact via the variable Contact
@@ -259,12 +261,11 @@ app.post("/contact", (req, res) => {
           console.log("something went wrong!");
           console.log(error);
         });
-     })
+    })
     .catch(function (error) {
       console.log("something went wrong!");
       console.log(error);
     });
-  
 });
 
 app.get("/register", (req, res) => {
@@ -279,25 +280,23 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   const phone_number = req.body.phone_number;
 
-  if(!firstName || !lastName || !email || !password)
-  {
+  if (!firstName || !lastName || !email || !password) {
     return res.render("registration", {
       errorMsg: "First Name, Last Name, Email and Password are required",
       layout: false,
     });
   }
 
-  if(!validateForm.passwordLengthCheck(password))
-  {
+  if (!validateForm.passwordLengthCheck(password)) {
     return res.render("registration", {
       errorMsg: "Password must have at least 8 characters",
       layout: false,
     });
   }
-  if(!validateForm.passwordCharacterCheck(password))
-  {
+  if (!validateForm.passwordCharacterCheck(password)) {
     return res.render("registration", {
-      errorMsg: "Password must contain at least one uppercase letter and one lowercase letter and one digit and one special character",
+      errorMsg:
+        "Password must contain at least one uppercase letter and one lowercase letter and one digit and one special character",
       layout: false,
     });
   }
@@ -305,28 +304,30 @@ app.post("/register", (req, res) => {
   // synchronize the Database with our models and automatically add the
   // table if it does not exist
 
-  sequelize.sync().then(function () {
-    // create a new "User" and add it to the database
-    User.create({
-      first_name: firstName,
-      last_name: lastName,
-      address: address,
-      email_id: email,
-      pass_word: password,
-      phone_number: phone_number,
-      user_created_on: new Date(),
-      user_role: "customer",
-    })
-      .then(function (User) {
-        // you can now access the newly created User via the variable User
-        console.log("success!");
+  bcrypt.hash(password, 10, (err, hash) => {
+    sequelize.sync().then(function () {
+      // create a new "User" and add it to the database
+      User.create({
+        first_name: firstName,
+        last_name: lastName,
+        address: address,
+        email_id: email,
+        pass_word: hash,
+        phone_number: phone_number,
+        user_created_on: new Date(),
+        user_role: "customer",
       })
-      .catch(function (error) {
-        console.log("something went wrong!");
-        console.log(error);
-      });
+        .then(function (User) {
+          // you can now access the newly created User via the variable User
+          console.log("success!");
+          res.redirect("/login");
+        })
+        .catch(function (error) {
+          console.log("something went wrong!");
+          console.log(error);
+        });
+    });
   });
-  res.redirect("/login");
 });
 
 app.get("/shoppingCart", (req, res) => {
@@ -378,21 +379,19 @@ app.post("/login", (req, res) => {
   //     layout: false
   //   });
   // }
-  if(!validateForm.emailNullCheck(email)){
+  if (!validateForm.emailNullCheck(email)) {
     return res.render("login", {
-          errorMsg: "email is required",
-          layout: false
-        })
-  }else
-  {
-    if(!validateForm.passwordNullCheck(password)){
-    return res.render("login", {
-          errorMsg: "password is required",
-          layout: false
-        })
+      errorMsg: "email is required",
+      layout: false,
+    });
+  } else {
+    if (!validateForm.passwordNullCheck(password)) {
+      return res.render("login", {
+        errorMsg: "password is required",
+        layout: false,
+      });
+    }
   }
-}
-  
 
   User.findOne({ where: { email_id: email } }).then((user) => {
     if (!user) {
@@ -405,36 +404,38 @@ app.post("/login", (req, res) => {
     else {
       // console.log(user.email_id, user.first_name, password, user.pass_word);
 
-      if (password == user.pass_word) {
-        //successful login
-        let isAdmin = user.user_role == "administrator" ? true : false;
-        req.session.user = {
-          email: user.email_id,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          address: user.address,
-          phone: user.phone_number,
-          isAdmin: isAdmin,
-        };
-        // if the user logged in, redirect to user dashboard
-        if (isAdmin) {
-          res.redirect("/dashboardAdmin");
+      bcrypt.compare(password, user.pass_word).then((isMatch) => {
+        if (isMatch) {
+          //successful login
+          let isAdmin = user.user_role == "administrator" ? true : false;
+          req.session.user = {
+            email: user.email_id,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            address: user.address,
+            phone: user.phone_number,
+            isAdmin: isAdmin,
+          };
+          // if the user logged in, redirect to user dashboard
+          if (isAdmin) {
+            res.redirect("/dashboardAdmin");
+          } else {
+            res.redirect("/dashboardUser");
+          }
         } else {
-          res.redirect("/dashboardUser");
+          res.render("login", {
+            errorMsg: "PASSWORD does not match",
+            layout: false,
+          });
         }
-      } else {
-        res.render("login", {
-          errorMsg: "PASSWORD does not match",
-          layout: false,
-        });
-      }
-    }
+      });
+    };
   });
 });
 
 app.get("/logout", (req, res) => {
   req.session.reset();
-  res.clearCookie('productsAddedToCart');
+  res.clearCookie("productsAddedToCart");
   res.redirect("/");
 });
 
@@ -513,31 +514,31 @@ app.post("/editProfile", ensureLogin, (req, res) => {
   const address = req.body.address;
   const phone = req.body.phone;
 
-   User.findOne({ where: { email_id: email }}).then((user) => {
-  //  .on('success', function (user) {
-    if (user) {
-      user.update({
-      first_name: firstName,
-      last_name: lastName,
-      address: address,
-      email_id: email,
-      phone_number: phone,
-      })
-      // .success(function () {})
-    }
-  })
-  .then (()=>{
-    req.session.user = {
-      //recreate session after editing profile
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
-      address: address,
-      phone: phone,
-    };
-    res.redirect("/profile");
-  })
-  
+  User.findOne({ where: { email_id: email } })
+    .then((user) => {
+      //  .on('success', function (user) {
+      if (user) {
+        user.update({
+          first_name: firstName,
+          last_name: lastName,
+          address: address,
+          email_id: email,
+          phone_number: phone,
+        });
+        // .success(function () {})
+      }
+    })
+    .then(() => {
+      req.session.user = {
+        //recreate session after editing profile
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        address: address,
+        phone: phone,
+      };
+      res.redirect("/profile");
+    });
 });
 //#endregion AdminPages
 
@@ -661,10 +662,10 @@ app.post("/update", ensureAdmin, upload.single("photo"), (req, res) => {
             quantity_in_stock: parseInt(req.body.quantity),
             category_id: parseInt(req.body.category),
             bestseller: Boolean(req.body.bestseller),
-            discount_percentage: Number(req.body.discount),
+            discount_percentage: Number(req.body.discount)
           },
           {
-            where: { product_id: Number(req.body.product_id) },
+            where: { product_id: Number(req.body.product_id) }
           }
         ).then(function () {
           console.log("Product is updated successfully");
@@ -767,13 +768,12 @@ app.post("/deleteProduct", ensureAdmin, (req, res) => {
 app.post("/delete", ensureAdmin, (req, res) => {
   sequelize.sync().then(function () {
     Product.destroy({
-      where: { product_id: req.body.prod_id }
+      where: { product_id: req.body.prod_id },
     }).then(function () {
       res.redirect("/productInDatabase");
       console.log("successfully removed product id " + req.body.prod_id);
     });
   });
-  
 });
 
 app.get("/dashboardAdmin", ensureAdmin, (req, res) => {
@@ -853,12 +853,12 @@ const getProducts = (query) => {
   const { page, size, product_name, sort } = query;
   let condition = product_name
     ? {
-        product_name: Sequelize.where(
-          Sequelize.fn("LOWER", Sequelize.col("product_name")),
-          "LIKE",
-          "%" + product_name.toLowerCase() + "%"
-        ),
-      }
+      product_name: Sequelize.where(
+        Sequelize.fn("LOWER", Sequelize.col("product_name")),
+        "LIKE",
+        "%" + product_name.toLowerCase() + "%"
+      ),
+    }
     : null;
   let order = ["product_id", "ASC"];
   if (sort > 1 && sort <= sortOptions.length) {
@@ -975,8 +975,8 @@ app.get("/search", (req, res) => {
   }
 });
 
-//#endregion
 
+//#endregion
 app.use("*", (req, res) => {
   res.render("pageNotFound", { layout: false });
 });
