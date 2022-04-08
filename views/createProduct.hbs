@@ -4,6 +4,7 @@
   {{>headMetaTags}}
   <link rel="stylesheet" href="./css/authenticatedUser.css" />
   <title>Product creation</title>
+
 </head>
 
 <body>
@@ -12,60 +13,51 @@
   <div class="container create-form">
     <div class="row">
       <div class="col-md-6 offset-md-3">
-        <form class="format-form" method="post" action="/createProduct" enctype="multipart/form-data">
+        <form class="format-form" id="form"  method="post" action="/createProduct"
+          enctype="multipart/form-data" onsubmit="return Validate(event)">
           <fieldset>
             <legend>Product Creation</legend>
             <div class="form-group">
               <div class="mb-3">
                 {{! <label for="product-name" class="form-label">Product name</label> }}
-                <input type="text" class="form-control" id="product-name" 
-                {{#if data}} placeholder="{{data.product.product_name}}" value="{{data.product.product_name}}" {{else}} placeholder="Product name"{{/if}} name="product_name"
+                <input type="text" class="form-control" id="product-name" placeholder="Product name" name="product_name"
                   required />
               </div>
-              
+
             </div>
             <div class="form-group">
               <div class="mb-3">
                 {{! <label for="description" class="form-label">Product description</label> }}
-                <textarea class="form-control" id="description" rows="2" 
-                  {{#if data}} placeholder="{{data.product.description}}"{{else}} placeholder="Product description"{{/if}}                 
-                  name="description" required >{{data.product.description}}</textarea>
+                <textarea class="form-control" id="description" rows="2" placeholder="Product description"
+                  name="description" required></textarea>
               </div>
-              
+
             </div>
             <div class="form-group">
               <div class="mb-3">
                 {{! <label for="unit_price" class="form-label">Product price</label> }}
-                <input type="text" class="form-control" id="unit_price" 
-                {{#if data}} placeholder="{{data.product.unit_price}}" value="{{data.product.unit_price}}" {{else}} placeholder="Product price" {{/if}}     
-                name="unit_price"
+                <input type="text" class="form-control" id="unit_price" placeholder="Product price" name="unit_price"
                   required />
-                  {{#if data.msg1 }}
-                  <p class="error-msg">{{data.msg1}}</p>
-                  {{/if}}
+                {{#if data.msg1 }}
+                <p class="error-msg">{{data.msg1}}</p>
+                {{/if}}
+                <p class="error-msg" id="msg1"></p>
               </div>
-              
+
             </div>
             <div class="form-group">
               <div class="mb-3">
                 {{! <label for="quantity" class="form-label">Quantity in stock</label> }}
-                <input type="number" min="0" class="form-control" id="quantity" 
-                 {{#if data}} placeholder="{{data.product.quantity_in_stock}}" value="{{data.product.quantity_in_stock}}" {{else}} placeholder="Product quantity"  {{/if}}     
-                name="quantity"
-                  required />
+                <input type="number" min="0" class="form-control" id="quantity" placeholder="Product quantity"
+                  name="quantity" required />
               </div>
-              
+
             </div>
             <div class="form-group">
               <div class="mb-3">
                 {{! <label for="category" class="form-label">Product category</label> }}
-                <select class="form-select" id="category" name="category" required >
-                  quantity_in_stock
-                   {{#if data}} 
-                   <option value="{{data.product.category_id}}">{{data.category.category_type}}</option>
-                   {{else}}      
-                  <option value="">Product category</option>
-                  {{/if}} 
+                <select class="form-select" id="category" name="category" required>
+                  <option value="">--select category--</option>
                   <option value="1">Green Tea</option>
                   <option value="2">Black Tea</option>
                   <option value="3">Herbal Tea</option>
@@ -73,22 +65,23 @@
                   <option value="5">Ground Coffee</option>
                 </select>
               </div>
-            
+
             </div>
             <div class="form-group">
               <div class="mb-3">
                 {{! <label for="discount" class="form-label">Discount percentage</label> }}
-                <input type="text" class="form-control" id="discount" name="discount"
-                  {{#if data}} placeholder="{{data.product.discount_percentage}}" value="{{data.product.discount_percentage}}" {{else}} placeholder="Discount percentage" {{/if}}     
-                   required />
-                   {{#if data.msg2}}
-                  <p class="error-msg">{{data.msg2}}</p>
-                  {{/if}}
+                <input type="text" class="form-control" id="discount" name="discount" placeholder="Discount percentage"
+                  required />
+                {{#if data.msg2}}
+                <p class="error-msg" >{{data.msg2}}</p>
+                {{/if}}
+                <p class="error-msg" id="msg2"></p>
               </div>
             </div>
 
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="bestseller" name="bestseller" {{#if data.product.bestseller}} checked {{/if}}/>
+              <input class="form-check-input" type="checkbox" id="bestseller" name="bestseller" {{#if
+                data.product.bestseller}} checked {{/if}} />
               <label class="form-check-label" for="bestseller">
                 Bestseller
               </label>
@@ -98,17 +91,19 @@
               <div class="mb-3">
                 {{! <label for="image" class="form-label">Product Image</label> }}
                 <h6>Upload product image</h6>
-                <input class="form-control-file" type="file" id="image" name="photo" accept=".jpeg,.png,.jpg" required/>
+                <input class="form-control-file" type="file" id="image" name="photo" accept=".jpeg,.png,.jpg"
+                  required />
                 {{#if data.msg3}}
-                  <p class="error-msg">{{data.msg3}}</p>
-                  {{/if}}
+                <p class="error-msg">{{data.msg3}}</p>
+                {{/if}}
+                <p class="error-msg" id="msg3"></p>
               </div>
             </div>
 
             <br />
             <div class="form-group btn-form">
               <button type="reset" class="btn btn-primary in-forms">CLEAR</button>
-              <button type="submit" class="btn btn-primary in-forms">CREATE</button>
+              <button type="submit" class="btn btn-primary in-forms" name="myButton">CREATE</button>
             </div>
             <br />
           </fieldset>
@@ -118,12 +113,48 @@
     </div>
   </div>
   <br />
+ 
   {{!-- footer --}}
   {{>footer}}
 
   {{!-- scripts --}}
   {{>footerScripts}}
+  <script >
+  function Validate(event) {
+     var result = true;
+        var x = document.getElementById("unit_price").value;
+        var y = document.getElementById("discount").value;
+        var temp1 = Number(x);
+        var temp2 = Number(y);
+        if (temp1 <= 0 || isNaN(temp1)) {
+          document.getElementById("msg1").innerHTML = "Invalid price, try again";
+          result = false;
+        }else{
+          document.getElementById("msg1").innerHTML = "";
+        }
+        if (temp2 < 0 || isNaN(temp2)) {
+          document.getElementById("msg2").innerHTML = "Invalid discount percentage, try again";
+         result = false;
+        }else{
+          document.getElementById("msg2").innerHTML = "";
+        }
+        var z = document.getElementById("image").value;
+        var temp3 = z.split("\\").pop();
+        let extension = temp3.split(".").pop();
+        if (extension !== "jpeg" && extension !== "jpg" && extension !== "png") {
+          document.getElementById("msg3").innerHTML = "Invalid image type, try again";
+          result = false;
+        }else{
+          document.getElementById("msg3").innerHTML = "";
+        }
 
+       /* if(result){
+          document.getElementById("create-btn").setAttribute("data-bs-toggle", "modal");
+          document.getElementById("create-btn").setAttribute("data-bs-target", "#exampleModal");
+        } */
+         return result;
+    }
+  </script>
 </body>
 
 </html>

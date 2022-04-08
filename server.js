@@ -147,7 +147,7 @@ app.use(
     cookieName: "session",
     secret: "cap805-cto",
     duration: 2 * 60 * 1000,
-    activeDuration: 60 * 1000, //automatic logout time
+    activeDuration: 10 *  60 * 1000, //automatic logout time
   })
 );
 
@@ -159,7 +159,7 @@ const path = require("path");
 const storage = multer.diskStorage({
   destination: "./views/images/",
   filename: function (req, file, cb) {
-    cb(null, "New" + file.originalname);
+    cb(null, Date.now() + file.originalname);
   },
 });
 const upload = multer({ storage: storage });
@@ -441,17 +441,15 @@ app.get("/createProduct", ensureAdmin, (req, res) => {
 const validate = require("./utilities/validateProduct");
 
 app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
-  let product = {
-    product_name: req.body.product_name,
-    description: req.body.description,
-    image: "images/" + req.file.filename,
-    unit_price: req.body.unit_price,
-    quantity_in_stock: req.body.quantity,
-    category_id: req.body.category,
-    bestseller: Boolean(req.body.bestseller),
-    discount_percentage: req.body.discount
-  }
-  if (validate.validProduct(req.body.product_name, req.body.description, req.body.unit_price, req.body.unit_price, req.file.filename)) {
+  if (
+    validate.validProduct(
+      req.body.product_name,
+      req.body.description,
+      req.body.unit_price,
+      req.body.unit_price,
+      req.file.filename
+    )
+  ) {
     sequelize.sync().then(function () {
       Product.create({
         product_name: req.body.product_name,
@@ -461,9 +459,10 @@ app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
         quantity_in_stock: parseInt(req.body.quantity),
         category_id: parseInt(req.body.category),
         bestseller: Boolean(req.body.bestseller),
-        discount_percentage: Number(req.body.discount)
+        discount_percentage: Number(req.body.discount),
       })
         .then(function (product) {
+          console.log(product);
           console.log("success!");
         })
         .catch(function (error) {
@@ -480,24 +479,12 @@ app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
       ? null
       : "Invalid Discount";
     let msg3_ = validate.checkFile(req.file.filename) ? null : "Invalid Image";
-    Category.findOne({
-      attributes: ["category_type"],
-      where: {
-        category_id: parseInt(req.body.category)
-      },
-      raw: true,
-    })
-      .then(function (data_) {
-        let category = data_;
-        res.render("createProduct", {
-          user: req.session.user,
-          data: { product, category, msg1: msg1_, msg2: msg2_, msg3: msg3_ },
-          layout: false,
-        });
-      })
-      .catch((err) => {
-        console.log("No results returned");
-      });
+
+    res.render("createProduct", {
+      user: req.session.user,
+      data: { msg1: msg1_, msg2: msg2_, msg3: msg3_ },
+      layout: false,
+    });
   }
 });
 
@@ -520,7 +507,7 @@ app.post("/updateProduct", ensureAdmin, (req, res) => {
         Category.findOne({
           attributes: ["category_type"],
           where: {
-            category_id: data.category_id
+            category_id: data.category_id,
           },
           raw: true,
         })
@@ -544,20 +531,29 @@ app.post("/updateProduct", ensureAdmin, (req, res) => {
 
 app.post("/update", ensureAdmin, upload.single("photo"), (req, res) => {
   let img = req.file ? "images/" + req.file.filename : req.body.img1;
-  if (validate.validProduct(req.body.product_name, req.body.description, req.body.unit_price, req.body.unit_price, img)) {
+  if (
+    validate.validProduct(
+      req.body.product_name,
+      req.body.description,
+      req.body.unit_price,
+      req.body.unit_price,
+      img
+    )
+  ) {
     sequelize
       .sync()
       .then(function () {
-        Product.update({
-          product_name: req.body.product_name,
-          description: req.body.description,
-          image: img,
-          unit_price: Number(req.body.unit_price),
-          quantity_in_stock: parseInt(req.body.quantity),
-          category_id: parseInt(req.body.category),
-          bestseller: Boolean(req.body.bestseller),
-          discount_percentage: Number(req.body.discount),
-        },
+        Product.update(
+          {
+            product_name: req.body.product_name,
+            description: req.body.description,
+            image: img,
+            unit_price: Number(req.body.unit_price),
+            quantity_in_stock: parseInt(req.body.quantity),
+            category_id: parseInt(req.body.category),
+            bestseller: Boolean(req.body.bestseller),
+            discount_percentage: Number(req.body.discount),
+          },
           {
             where: { product_id: Number(req.body.product_id) },
           }
@@ -599,7 +595,13 @@ app.post("/update", ensureAdmin, upload.single("photo"), (req, res) => {
               let category = data_;
               res.render("updateProduct", {
                 user: req.session.user,
-                data: { product, category, msg1: msg1_, msg2: msg2_, msg3: msg3_ },
+                data: {
+                  product,
+                  category,
+                  msg1: msg1_,
+                  msg2: msg2_,
+                  msg3: msg3_,
+                },
                 layout: false,
               });
             })
@@ -618,20 +620,62 @@ app.get("/deleteProduct", ensureAdmin, (req, res) => {
   res.render("deleteProduct", { user: req.session.user, layout: false });
 });
 app.post("/deleteProduct", ensureAdmin, (req, res) => {
-  res.render("deleteProduct", { user: req.session.user, layout: false });
+  var id_ = Number(req.body.product_id);
+  var product = {};
+  sequelize.sync().then(function () {
+    Product.findOne({
+      where: {
+        product_id: id_,
+      },
+      raw: true,
+    })
+      .then(function (data) {
+        product = data;
+        Category.findOne({
+          attributes: ["category_type"],
+          where: {
+            category_id: data.category_id,
+          },
+          raw: true,
+        })
+          .then(function (data_) {
+            let category = data_;
+            res.render("deleteProduct", {
+              user: req.session.user,
+              data: { product, category },
+              layout: false,
+            });
+          })
+          .catch((err) => {
+            console.log("No results returned");
+          });
+      })
+      .catch((err) => {
+        console.log("No results returned for product with product ID " + id_);
+      });
+  });
 });
 app.post("/delete", ensureAdmin, (req, res) => {
-  res.render("deleteProduct", { user: req.session.user, layout: false });
+  sequelize.sync().then(function () {
+    Product.destroy({
+      where: { product_id: req.body.prod_id }
+    }).then(function () {
+      res.redirect("/productInDatabase");
+      console.log("successfully removed product id " + req.body.prod_id);
+    });
+  });
+  
 });
+
 app.get("/dashboardAdmin", ensureAdmin, (req, res) => {
   res.render("dashboardAdmin", { user: req.session.user, layout: false });
 });
 
 app.get("/productInDatabase", ensureAdmin, (req, res) => {
-  var productList = [];
   sequelize.sync().then(function () {
     Product.findAll({
-      raw: true
+      order: [["product_id", "ASC"]],
+      raw: true,
     })
       .then(function (products) {
         res.render("productInDatabase", {
@@ -700,12 +744,12 @@ const getProducts = (query) => {
   const { page, size, product_name, sort } = query;
   let condition = product_name
     ? {
-      product_name: Sequelize.where(
-        Sequelize.fn("LOWER", Sequelize.col("product_name")),
-        "LIKE",
-        "%" + product_name.toLowerCase() + "%"
-      ),
-    }
+        product_name: Sequelize.where(
+          Sequelize.fn("LOWER", Sequelize.col("product_name")),
+          "LIKE",
+          "%" + product_name.toLowerCase() + "%"
+        ),
+      }
     : null;
   let order = ["product_id", "ASC"];
   if (sort > 1 && sort <= sortOptions.length) {
