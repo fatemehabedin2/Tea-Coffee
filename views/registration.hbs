@@ -28,6 +28,9 @@
                         <div class="p-5">
                             <div class="text-center">
                                 <h2> Registration Form </h2>
+                                {{#if errorMsg}}
+                                <h5>{{errorMsg}}</h5>
+                                {{/if}}
                                 <br/>
                             </div>
                             <form method="post" action="/register">
@@ -37,7 +40,7 @@
                                 <input type="text" class="form-control" name="lastName" id="lastName" placeholder="i.e. Smith" />
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" name="email" id="email" placeholder="Your Email Address" />
-                                <label for="password" class="form-label">Password</label>
+                                <label for="password" class="form-label">Password (Password must contain at least one uppercase letter and one lowercase letter and one digit and one special character)</label>
                                 <input type="text" class="form-control" name="password" id="password" placeholder="Your password" />
                                 {{!-- <label for="password" class="form-label">Confirm Password</label>
                                 <input type="text" class="form-control" name="password" id="password" placeholder="Confirm Your password" /> --}}

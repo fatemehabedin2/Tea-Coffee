@@ -51,6 +51,9 @@ sequelize
 const UserModel = require("./models/UserModel.js");
 const User = UserModel(sequelize, Sequelize);
 
+const ContactModel = require("./models/ContactModel.js");
+const Contact_message = ContactModel(sequelize, Sequelize);
+
 const ProductModel = require("./models/ProductModel");
 const Product = ProductModel(sequelize, Sequelize);
 
@@ -63,6 +66,13 @@ Category.hasOne(Product, {
     field: "category_id",
   },
 });
+
+// User.hasOne(Contact, {
+//   foreignKey: {
+//     name: "user_id",
+//     field: "user_id",
+//   },
+// });
 
 //#endregion
 require("dotenv").config();
@@ -147,7 +157,7 @@ app.use(
     cookieName: "session",
     secret: "cap805-cto",
     duration: 2 * 60 * 1000,
-    activeDuration: 10 *  60 * 1000, //automatic logout time
+    activeDuration: 10 * 60 * 1000, //automatic logout time
   })
 );
 
@@ -215,6 +225,48 @@ app.get("/contact", (req, res) => {
   res.render("contact", { user: req.session.user, layout: false });
 });
 
+const validateForm = require("./utilities/validateForm");
+
+app.post("/contact", (req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const message = req.body.message;
+
+  if (!name|| !email || !message ) 
+  {
+    return res.render("contact", {
+      errorMsg: "All fields are required",
+      layout: false,
+    });
+  }
+    sequelize.sync().then(function () {
+      // create a new "Contact" and add it to the database
+      Contact_message.create({
+        name:name, 
+        email_id: email,
+        message_text:message,
+        message_timestamp: new Date() 
+      })
+        .then(function (Contact_message) {
+          // you can now access the newly created Contact via the variable Contact
+          console.log("success!");
+          return res.render("contact", {
+            successMsg: " Message submitted successfully ",
+            layout: false,
+          });
+        })
+        .catch(function (error) {
+          console.log("something went wrong!");
+          console.log(error);
+        });
+     })
+    .catch(function (error) {
+      console.log("something went wrong!");
+      console.log(error);
+    });
+  
+});
+
 app.get("/register", (req, res) => {
   res.render("registration", { layout: false });
 });
@@ -226,6 +278,29 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const phone_number = req.body.phone_number;
+
+  if(!firstName || !lastName || !email || !password)
+  {
+    return res.render("registration", {
+      errorMsg: "First Name, Last Name, Email and Password are required",
+      layout: false,
+    });
+  }
+
+  if(!validateForm.passwordLengthCheck(password))
+  {
+    return res.render("registration", {
+      errorMsg: "Password must have at least 8 characters",
+      layout: false,
+    });
+  }
+  if(!validateForm.passwordCharacterCheck(password))
+  {
+    return res.render("registration", {
+      errorMsg: "Password must contain at least one uppercase letter and one lowercase letter and one digit and one special character",
+      layout: false,
+    });
+  }
 
   // synchronize the Database with our models and automatically add the
   // table if it does not exist
@@ -288,6 +363,7 @@ app.post("/addToCart", (req, res) => {
 //#endregion
 
 //#region Authentication
+
 app.get("/login", (req, res) => {
   res.render("login", { user: req.session.user, layout: false });
 });
@@ -296,12 +372,27 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  if (email == "" || password == "") {
+  // if (email == "" || password == "") {
+  //   return res.render("login", {
+  //     errorMsg: "Both fields are required",
+  //     layout: false
+  //   });
+  // }
+  if(!validateForm.emailNullCheck(email)){
     return res.render("login", {
-      errorMsg: "Both fields are required",
-      layout: false,
-    });
+          errorMsg: "email is required",
+          layout: false
+        })
+  }else
+  {
+    if(!validateForm.passwordNullCheck(password)){
+    return res.render("login", {
+          errorMsg: "password is required",
+          layout: false
+        })
   }
+}
+  
 
   User.findOne({ where: { email_id: email } }).then((user) => {
     if (!user) {
@@ -343,6 +434,7 @@ app.post("/login", (req, res) => {
 
 app.get("/logout", (req, res) => {
   req.session.reset();
+  res.clearCookie('productsAddedToCart');
   res.redirect("/");
 });
 
@@ -413,6 +505,7 @@ app.get("/checkout", (req, res) => {
 app.get("/editProfile", ensureLogin, (req, res) => {
   res.render("editProfile", { user: req.session.user, layout: false });
 });
+
 app.post("/editProfile", ensureLogin, (req, res) => {
   const email = req.body.email;
   const firstName = req.body.firstName;
@@ -420,16 +513,31 @@ app.post("/editProfile", ensureLogin, (req, res) => {
   const address = req.body.address;
   const phone = req.body.phone;
 
-  req.session.user = {
-    //recreate session after editing profile
-    email: email,
-    firstName: firstName,
-    lastName: lastName,
-    address: address,
-    phone: phone,
-  };
-
-  res.redirect("/profile");
+   User.findOne({ where: { email_id: email }}).then((user) => {
+  //  .on('success', function (user) {
+    if (user) {
+      user.update({
+      first_name: firstName,
+      last_name: lastName,
+      address: address,
+      email_id: email,
+      phone_number: phone,
+      })
+      // .success(function () {})
+    }
+  })
+  .then (()=>{
+    req.session.user = {
+      //recreate session after editing profile
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      address: address,
+      phone: phone,
+    };
+    res.redirect("/profile");
+  })
+  
 });
 //#endregion AdminPages
 
@@ -439,6 +547,7 @@ app.get("/createProduct", ensureAdmin, (req, res) => {
 });
 
 const validate = require("./utilities/validateProduct");
+const { timeStamp } = require("console");
 
 app.post("/createProduct", ensureAdmin, upload.single("photo"), (req, res) => {
   if (
