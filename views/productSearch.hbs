@@ -6,7 +6,6 @@
 		{{>headMetaTags}}
 	</head>
 	<body>
-		{{!-- header --}}
 		{{>header searchText=finalData.searchText}}
 
 		{{!-- div between header and footer--}}
@@ -17,7 +16,52 @@
 					<h4 class="display-4 text-center">Search Results for '{{finalData.searchText}}'</h4>
 				{{/if}}
 
-                {{>productListings allProductsResp=finalData.filteredProductsResp}}                 
+				{{#if finalData.filteredProductsResp.products}}
+				<div class="row all-products-wrap">
+					{{#each finalData.filteredProductsResp.products}}
+					<div class="col-md-4">
+						{{>productListingItem product=this}}
+					</div>
+					{{/each}}
+				</div>
+
+				<nav class="d-flex justify-content-center">
+					<ul class="pagination">
+						{{!-- display previous btn on all pages except for the 1st page --}}
+						{{#notEqual 1 finalData.filteredProductsResp.currentPage}}
+						<li class="page-item">
+							<a class="page-link" href="?searchTerm={{finalData.searchText}}&page={{#sum finalData.filteredProductsResp.currentPage -1}}{{/sum}}">
+								Previous
+							</a>
+						</li>
+						{{/notEqual}}
+
+						{{!-- display all page numbers when totalPages is greater than one --}}
+						{{#notEqual 1 finalData.filteredProductsResp.totalPages}}
+							{{#for 1 finalData.filteredProductsResp.totalPages 1}}
+							<li class="page-item" >
+								<a class="page-link" href="?searchTerm={{../finalData.searchText}}&page={{this}}">
+									{{this}}
+								</a>
+							</li>
+							{{/for}}
+						{{/notEqual}}
+
+						{{!-- display next btn on all pages except for the last page --}}
+						{{#notEqual finalData.filteredProductsResp.totalPages finalData.filteredProductsResp.currentPage}}
+						<li class="page-item">
+							<a class="page-link" href="?searchTerm={{finalData.searchText}}&page={{#sum finalData.filteredProductsResp.currentPage 1}}{{/sum}}">
+								Next
+							</a>
+						</li>
+						{{/notEqual}}
+					</ul>
+				</nav>
+			{{else}}
+				<div class="row all-products-wrap text-center">
+					<div class="col-12">No Products to display</div>
+				</div>
+			{{/if}}        
             </div>
 		</div>
 
