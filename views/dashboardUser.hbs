@@ -7,12 +7,12 @@
 </head>
 
 <body>
-  {{>user-header fName = user.firstName}}
+  {{>header user=finalData.user}}
   <section id="hero-section-2">
     <div class="container">
       <br /><br /><br /><br /><br /><br /><br /><br />
       <h4>
-        Hello {{user.firstName}} {{user.lastName}}<br />
+        Hello {{finalData.user.firstName}} {{finalData.user.lastName}}<br />
         Enjoy our products
       </h4>
     </div>

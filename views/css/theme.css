@@ -36,6 +36,7 @@ header .btn-outline-primary.name-tag{border-color: transparent !important;paddin
 .search-col input::placeholder {color: rgba(255,255,255,.5);opacity: 1;}
 .search-col input:-ms-input-placeholder {color: rgba(255,255,255,.5);}
 .search-col input::-ms-input-placeholder {color: rgba(255,255,255,.5);}
+.search-col form{margin-bottom: 0;}
 
 /* home banner styling */
 .home #mid-wrap{padding-top: 0;}

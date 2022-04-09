@@ -472,11 +472,11 @@ app.get("/dashboardUser", ensureLogin, (req, res) => {
     })
     .then((data) => {
       res.render("dashboardUser", {
-        layout: false,
-        user: req.session.user,
+        layout: false,        
         finalData: {
           teaProducts,
           coffeeProducts: data,
+          user: req.session.user,
         },
       });
     })
