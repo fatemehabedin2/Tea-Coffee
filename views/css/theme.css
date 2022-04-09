@@ -27,6 +27,7 @@ header .nav-link{color: #fff !important;font-weight: 700;}
 header .nav-link{color: #fff !important;font-weight: 700;}
 header .btn-outline-primary{border-color: rgba(255,255,255,.5) !important; color: rgba(255,255,255,.5) !important;}
 header .btn-outline-primary:hover{background: transparent !important; border-color: #fff !important; color: #fff !important;}
+header .btn-outline-primary.name-tag{border-color: transparent !important;padding-left: 0;padding-right: 0;cursor: auto;}
 .login-logout-btn{margin-left: 20px;}
 .brand-wrap{padding: 15px 0;}
 .navbar-dark .navbar-toggler{font-size: 15px !important;padding: 5px !important;border-color: rgba(255,255,255,.5) !important;}

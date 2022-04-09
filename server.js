@@ -219,7 +219,10 @@ app.get("/", (req, res) => {
 });
 
 app.get("/about", (req, res) => {
-  res.render("about", { layout: false });
+  res.render("about", { 
+    layout: false,
+    user: req.session.user
+  });
 });
 
 app.get("/contact", (req, res) => {
@@ -849,6 +852,7 @@ const getProducts = (query) => {
 };
 
 app.get("/products", (req, res) => {
+  // console.log(req.session.user);
   let allProductsResp = "";
   getProducts(req.query)
     .then((data) => {
@@ -861,7 +865,8 @@ app.get("/products", (req, res) => {
         layout: false,
         finalData: {
           allProductsResp,
-          allCategories: data
+          allCategories: data,
+          user: req.session.user
         },
       });
     })
@@ -891,6 +896,7 @@ app.get("/products/:prodID", (req, res) => {
         finalData: {
           singleProduct: singleProduct,
           relatedProducts: relatedProducts,
+          user: req.session.user
         },
       });
     })
@@ -918,6 +924,7 @@ app.get("/search", (req, res) => {
           finalData: {
             searchText,
             filteredProductsResp: data,
+            user: req.session.user
           },
         });
       })
