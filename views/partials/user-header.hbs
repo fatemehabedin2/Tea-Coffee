@@ -15,15 +15,16 @@
           </a>
         </div>
 
-        <div class="col-12 col-lg-4 search-col">
-          <form class="d-flex">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search our Products" aria-label="Search" />
-            <button class="btn btn-outline-primary" type="submit">
-              <i class="fa fa-search" aria-hidden="true"></i>
-            </button>
-          </form>
+        <div class="col-12 col-lg-4 search-col">	
+					<form class="d-flex" method="get" action="/search">
+						<input required name="searchTerm" class="form-control mr-sm-2" type="search" placeholder="Search our Products"
+							aria-label="Search" value="{{#if searchText}}{{searchText}}{{/if}}">
+						<button class="btn btn-outline-primary" type="submit">
+							<i class="fa fa-search" aria-hidden="true"></i>
+						</button>
+					</form>
+				</div>
 
-        </div>
         <div class="col-6 col-lg-4 d-flex justify-content-end">
           <a href="/profile" class="btn  login-logout-btn" style="color: white;">{{fName}}</a>
           <a href="/shoppingCart" class="btn btn-outline-primary"><i class="fa fa-shopping-cart"
