@@ -36,7 +36,11 @@
           <td>${{unit_price}}</td>
           <td>{{quantity_in_stock}}</td>
           <td>{{category_id}}</td>
-          <td>{{bestseller}}</td>
+          {{#if bestseller}}
+          <td>Yes</td>
+          {{else}}
+          <td>No</td>
+          {{/if}}
           <td>{{discount_percentage}}</td>
           <td><img src={{image}} width="100px" height="80px" </td>
           <td>
