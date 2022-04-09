@@ -803,7 +803,7 @@ app.get("/productInDatabase", ensureAdmin, (req, res) => {
 
 //#region Products
 const getPagination = (page, size) => {
-  const limit = size ? size : 9;
+  const limit = size ? size : 12;
   page--;
   const offset = page ? page * limit : 0;
   return { limit, offset };
