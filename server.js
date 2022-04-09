@@ -138,7 +138,7 @@ app.engine(
         } else {
           return options.fn(this);
         }
-      },
+      }
     },
   })
 );
@@ -816,41 +816,8 @@ const getPagingData = (data, page, limit) => {
   return { totalItems, products, totalPages, currentPage };
 };
 
-let sortOptions = [
-  {
-    id: 1,
-    value: "A-Z",
-    order: ["product_name", "ASC"],
-    active: true,
-  },
-  {
-    id: 2,
-    value: "Z-A",
-    order: ["product_name", "DESC"],
-    active: false,
-  },
-  {
-    id: 3,
-    value: "Price, Low to High",
-    order: ["unit_price", "ASC"],
-    active: false,
-  },
-  {
-    id: 4,
-    value: "Price, High to Low",
-    order: ["unit_price", "DESC"],
-    active: false,
-  },
-];
-
-const makeAllSortOptionsNonActive = () => {
-  sortOptions.forEach((sortOption) => {
-    sortOption.active = false;
-  });
-};
-
 const getProducts = (query) => {
-  const { page, size, product_name, sort } = query;
+  const { page, size, product_name } = query;
   let condition = product_name
     ? {
       product_name: Sequelize.where(
@@ -860,25 +827,19 @@ const getProducts = (query) => {
       ),
     }
     : null;
-  let order = ["product_id", "ASC"];
-  if (sort > 1 && sort <= sortOptions.length) {
-    order = sortOptions[sort - 1].order;
-    makeAllSortOptionsNonActive();
-    sortOptions[sort - 1].active = true;
-  }
 
   const { limit, offset } = getPagination(page, size);
 
   return new Promise((resolve, reject) => {
     Product.findAndCountAll({
       where: condition,
-      order: [order],
+      order: [["product_id", "ASC"]],
       limit,
       offset,
       raw: true,
     })
       .then((data) => {
-        const response = getPagingData(data, page, limit, sort);
+        const response = getPagingData(data, page, limit);
         resolve(response);
       })
       .catch((err) => {
@@ -900,8 +861,7 @@ app.get("/products", (req, res) => {
         layout: false,
         finalData: {
           allProductsResp,
-          allCategories: data,
-          sortOptions,
+          allCategories: data
         },
       });
     })
@@ -964,7 +924,7 @@ app.get("/search", (req, res) => {
       .catch((err) => {
         console.log("No Products found: " + err);
       });
-  } else {
+  }else {
     res.render("productSearch", {
       layout: false,
       finalData: {
