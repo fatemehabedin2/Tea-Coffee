@@ -64,7 +64,7 @@ footer{background: var(--brown);color: #fff;}
 
 
 /* product detail page styling */
-.product-detail .card-text{font-size: 22px;line-height: 35px;font-weight: 400;text-transform: capitalize;}
+.single-product .card-text{font-size: 22px;line-height: 35px;font-weight: 400;text-transform: capitalize;}
 .product-detail .product-wrap{align-items: center;}
 
 
