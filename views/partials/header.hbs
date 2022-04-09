@@ -27,9 +27,14 @@
 
 
 				<div class="col-6 col-lg-4 d-flex justify-content-end">
-					<a href="/shoppingCart" class="btn btn-outline-primary"><i class="fa fa-shopping-cart"
+					<a href="/shoppingCart" class="btn btn-outline-primary">Cart &nbsp;<i class="fa fa-shopping-cart"
 							aria-hidden="true"></i></a>
-					<a href="/login" class="btn btn-outline-primary login-logout-btn"><i class="fa fa-sign-in"></i></a>
+					{{#if user}}
+						<a href="/logout" class="btn btn-outline-primary login-logout-btn">Log Out &nbsp; <i class="fa fa-sign-out"></i></a>
+						<span class="btn btn-outline-primary login-logout-btn name-tag">Hello {{user.firstName}}!</span>
+					{{else}}
+						<a href="/login" class="btn btn-outline-primary login-logout-btn">Log In &nbsp; <i class="fa fa-sign-in"></i></a>
+					{{/if}}
 				</div>
 			</div>
 		</div>
