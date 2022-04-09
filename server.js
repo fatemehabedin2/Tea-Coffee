@@ -157,7 +157,7 @@ app.use(
   clientSessions({
     cookieName: "session",
     secret: "cap805-cto",
-    duration: 2 * 60 * 1000,
+    duration: 20 * 60 * 1000,
     activeDuration: 10 * 60 * 1000, //automatic logout time
   })
 );

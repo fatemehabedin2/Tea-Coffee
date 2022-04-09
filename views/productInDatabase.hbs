@@ -36,8 +36,16 @@
           <td>${{unit_price}}</td>
           <td>{{quantity_in_stock}}</td>
           <td>{{category_id}}</td>
-          <td>{{bestseller}}</td>
+          {{#if bestseller}}
+          <td>Yes</td>
+          {{else}}
+          <td>No</td>
+          {{/if}}
+          {{#if discount_percentage}}
           <td>{{discount_percentage}}</td>
+          {{else}}
+          <td>0.00</td>
+          {{/if}}
           <td><img src={{image}} width="100px" height="80px" </td>
           <td>
             <form  method="POST" action="updateProduct">
