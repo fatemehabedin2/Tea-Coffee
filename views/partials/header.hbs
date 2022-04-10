@@ -44,11 +44,15 @@
 		<div class="container">
 			<div class="collapse navbar-collapse justify-content-center" id="navbarToggler">
 				<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+					{{#if user}}
+					{{#navLink '/dashboardUser'}} Dashboard User {{/navLink}}
+					{{else}}
 					{{#navLink '/'}} Home {{/navLink}}
+					{{/if}}
 					{{#navLink '/products'}} All Products {{/navLink}}
 					{{#navLink '/about'}} About Us {{/navLink}}
 					{{#navLink '/contact'}} Contact Us {{/navLink}}
-					{{#navLink '/dashboardUser'}} My Account {{/navLink}}
+					{{#navLink '/profile'}} My Account {{/navLink}}
 				</ul>
 			</div>
 		</div>

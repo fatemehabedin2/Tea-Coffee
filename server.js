@@ -475,9 +475,9 @@ app.get("/dashboardUser", ensureLogin, (req, res) => {
         layout: false,        
         finalData: {
           teaProducts,
-          coffeeProducts: data,
-          user: req.session.user,
+          coffeeProducts: data
         },
+        user: req.session.user
       });
     })
     .catch((err) => {
