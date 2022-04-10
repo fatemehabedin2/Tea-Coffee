@@ -31,53 +31,26 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {{#each cartData}}
                                 <tr>
                                     <td>
                                         <a class="text-body">
-                                            Longitude 123°W Blend
+                                            {{product_name}}
                                         </a>
                                     </td>
-                                    <td>$14.89</td>
+                                    <td>${{unit_price}}</td>
                                     <td> X </td>
                                     <td>
-                                        <input type="number" style="width: 70px;" min="1" name="qnt[]" value=1 />
+                                        <input type="number" style="width: 70px;" min="1" name="qnt[]"
+                                            value={{count}} />
                                     </td>
-                                    <td>$14.89</td>
+                                    <td>${{total}}</td>
                                 </tr>
-
-                                <tr>
-                                    <td>
-                                        <a class="text-body">
-                                            Black Tea Blueberry
-                                        </a>
-                                    </td>
-                                    <td>$13.98</td>
-                                    <td> X </td>
-                                    <td>
-                                        <input type="number" style="width: 70px;" min="1" name="qnt[]" value=1 />
-                                    </td>
-                                    <td>$13.98</td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        <a class="text-body">
-                                            Black Tea Cardamom
-                                        </a>
-                                    </td>
-                                    <td>$8.99</td>
-                                    <td> X </td>
-                                    <td>
-                                        <input type="number" style="width: 70px;" min="1" name="qnt[]" value=1 />
-                                    </td>
-                                    <td>
-                                        $8.99</td>
-                                </tr>
+                                {{/each}}
                             </tbody>
+
                         </table>
-                        <p style=" margin-left: 330px; float:left;"> &#9; &#9; &#9; &#9; &#9; &#9; &#9; &#9; &#9; &#9;
-                            &#9; &#9;
-                            Subtotal: &emsp; $37.86</p>
+                        <p style="margin-left: 400px;">Subtotal: ${{subtotal}}</p>
                     </div>
                 </div>
                 <div class="col-6 border border-success rounded-3">

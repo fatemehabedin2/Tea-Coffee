@@ -444,6 +444,7 @@ app.get("/product/delete/:prodID", (req, res) => {
     //res.send("shopping");
     //console.log('Before setting cookie', req.cookies.productsAddedToCart);
     res.cookie("productsAddedToCart", updatedCart, { secure: false, overwrite: true });
+    res.redirect("/shoppingCart");
     // console.log("After reseting");
     // console.log(req.cookies.productsAddedToCart);
   };
@@ -631,7 +632,7 @@ app.get("/shippingDetail", ensureLogin, (req, res) => {
   });
 });
 
-app.post("/shippingDetail", ensureLogin, (req, res) => {
+app.post("/shippingDetail", ensureLogin, async (req, res) => {
   const inputFirstName = req.body.inputFirstName;
   const inputLastName = req.body.inputLastName;
   const inputAddress1 = req.body.inputAddress1;
@@ -648,6 +649,50 @@ app.post("/shippingDetail", ensureLogin, (req, res) => {
     inputCity,
     inputState
   };
+  const frequency = (product_id) => {
+    let count = 0;
+    req.cookies.productsAddedToCart.forEach((element) => {
+      if (element.product_id == product_id) {
+        let qty = parseInt(element.quantity);
+        count = count + qty;
+      }
+    })
+    return count;
+  }
+  var cart = [];
+  let flag = true;
+  let subtotal = 0;
+  for (let i = 0; i < req.cookies.productsAddedToCart.length; i++) {
+    let data = await Product.findOne({
+      where: {
+        product_id: req.cookies.productsAddedToCart[i].product_id
+      },
+      raw: true,
+    })
+    if (cart.length == 0) {
+      data.count = frequency(data.product_id);
+      data.total = (data.count * data.unit_price).toFixed(2);
+      subtotal = subtotal + parseFloat(data.total);
+      // console.log('aaaaaaaaaa ' + data.product_id + "      " + data.count);
+      cart.push(data);
+
+    } else {
+      for (let i = 0; i < cart.length; i++) {
+        if (data.product_id == cart[i].product_id) {
+          flag = false;
+          break;
+        } else {
+          flag = true
+        }
+      }
+      if (flag) {
+        data.count = frequency(data.product_id);
+        data.total = (data.count * data.unit_price).toFixed(2);
+        subtotal = subtotal + parseFloat(data.total);
+        cart.push(data);
+      }
+    }
+  }
 
   User.update({
     address: address
@@ -657,8 +702,7 @@ app.post("/shippingDetail", ensureLogin, (req, res) => {
         email_id: req.session.user.email
       }
     }).then(data => {
-
-      res.render("checkout", { shippingAddress: shippingAddress, layout: false });
+      res.render("checkout", { shippingAddress: shippingAddress, cartData: cart, subtotal: subtotal, layout: false });
     });
 });
 
@@ -666,12 +710,59 @@ app.get("/orders", (req, res) => {
   res.render("orderHistory", { layout: false, user: req.session.user });
 });
 
-app.get("/confirmOrder", (req, res) => {
-  res.render("confirmOrder", { layout: false, user: req.session.user });
+app.get("/confirmOrder", ensureLogin, async (req, res) => {
+  const frequency = (product_id) => {
+    let count = 0;
+    req.cookies.productsAddedToCart.forEach((element) => {
+      if (element.product_id == product_id) {
+        let qty = parseInt(element.quantity);
+        count = count + qty;
+      }
+    })
+    return count;
+  }
+  var cart = [];
+  let flag = true;
+  let subtotal = 0;
+  for (let i = 0; i < req.cookies.productsAddedToCart.length; i++) {
+    let data = await Product.findOne({
+      where: {
+        product_id: req.cookies.productsAddedToCart[i].product_id
+      },
+      raw: true,
+    })
+    if (cart.length == 0) {
+      data.count = frequency(data.product_id);
+      data.total = (data.count * data.unit_price).toFixed(2);
+      subtotal = subtotal + parseFloat(data.total);
+      // console.log('aaaaaaaaaa ' + data.product_id + "      " + data.count);
+      cart.push(data);
+
+    } else {
+      for (let i = 0; i < cart.length; i++) {
+        if (data.product_id == cart[i].product_id) {
+          flag = false;
+          break;
+        } else {
+          flag = true
+        }
+      }
+      if (flag) {
+        data.count = frequency(data.product_id);
+        data.total = (data.count * data.unit_price).toFixed(2);
+        subtotal = subtotal + parseFloat(data.total);
+        cart.push(data);
+      }
+    }
+  }
+  res.render("confirmOrder", { layout: false, cartData: cart, subtotal: subtotal, user: req.session.user });
 });
 
-app.get("/checkout", (req, res) => {
-  res.render("checkout", { layout: false, user: req.session.user });
+app.get("/checkout", ensureLogin, async (req, res) => {
+
+  res.render("checkout",
+    { layout: false, user: req.session.user }
+  );
 });
 
 app.get("/editProfile", ensureLogin, (req, res) => {
