@@ -89,14 +89,15 @@
                             style=" width: 200px; margin-left: 150px; float:left;">
                             <br>
                             <address style="text-align:center">
-                                64, Starhill Cres</br>
-                                Brampton</br>
-                                Ontario
+                                {{shippingAddress.inputFirstName}} {{shippingAddress.inputLastName}}
+                                <br>
+                                {{shippingAddress.inputAddress1}} , {{shippingAddress.inputAddress2}}</br>
+                                {{shippingAddress.inputCity}}, {{shippingAddress.inputState}}
                             </address>
                         </div>
                         <br> <br> <br>
                         <div class="row justify-content-center my-5">
-
+                            <br>
                             <a href="/confirmOrder" class="btn btn-primary ">Pay</a>
 
                         </div>

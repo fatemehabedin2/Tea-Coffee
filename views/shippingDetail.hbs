@@ -22,41 +22,48 @@
                         <div class="text-center">
                             <h2> Shipping Address </h2>
                         </div>
-                        <form class="row g-3">
-
+                        <form class="row g-3" action="/shippingDetail" method="post">
                             <div class="col-md-6">
-                                <label for="inputEmail" class="form-label">First Name</label>
-                                <input type="email" class="form-control" id="inputEmail" required />
+                                <label for="inputFirstName" class="form-label">First Name</label>
+                                <input required type="text" class="form-control" name="inputFirstName"
+                                    id="inputFirstName" value="{{data1.firstName}}" placeholder="first name" />
                             </div>
-
-                            <div class="col-md-6">
-                                <label for="inputPassword" class="form-label">Last Name</label>
-                                <input type="password" class="form-control" id="inputPassword" />
+                            <div class=" col-md-6">
+                                <label for="inputLastName" class="form-label">Last Name</label>
+                                <input required type="text" class="form-control" name="inputLastName" id="inputLastName"
+                                    value="{{data1.lastName}}" placeholder="last name" />
                             </div>
                             <div class="col-6">
-                                <label for="inputAddress" class="form-label">Address1</label>
-                                <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St" />
+                                <label for="inputAddress1" class="form-label">Address1</label>
+                                <input required type="text" class="form-control" name="inputAddress1" id="inputAddress1"
+                                    value="{{data1.address1}}" placeholder="1234" />
                             </div>
                             <div class="col-6">
-                                <label for="inputAddress" class="form-label">Address2</label>
-                                <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St" />
+                                <label for="inputAddress2" class="form-label">Address2</label>
+                                <input type="text" class="form-control" name="inputAddress2" id="inputAddress2"
+                                    value="{{data1.address2}}" placeholder="1234 Main St" />
                             </div>
                             <div class="col-md-6">
                                 <label for="inputCity" class="form-label">City</label>
-                                <input type="text" class="form-control" id="inputCity" />
+                                <input required type="text" class="form-control" name="inputCity" value="{{data1.city}}"
+                                    id="inputCity" />
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="inputState" class="form-label">State</label>
-                                <select id="inputState" class="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>Ontario</option>
-                                    <option>Alberta</option>
+                                <select name="inputState" id="inputState" class="form-select">
+                                    <option value="{{data1.state}}" selected>{{data1.state}}</option>
+                                    <option value="Alberta">Alberta</option>
+                                    <option value="British Columbia">British Columbia</option>
+                                    <option value="Manitoba">Manitoba</option>
+                                    <option value="New Brunswick">New Brunswick</option>
+                                    <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
+                                    <option value="Nova Scotia">Nova Scotia</option>
+                                    <option value="Ontario">Ontario</option>
+                                    <option value="Quebec">Quebec</option>
+                                    <option value="Saskatchewan">Saskatchewan</option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
-                                <label for="inputZip" class="form-label">Zip</label>
-                                <input type="text" class="form-control" id="inputZip" />
-                            </div>
+
                             <div class="col-12">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="gridCheck" />
@@ -66,7 +73,8 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <a href="/checkout" class="btn btn-primary float-right">Add address</a>
+                                <button type="submit" class="btn btn-primary">Update Address</button>
+                                {{!-- <a href=" /checkout" class="btn btn-primary float-right">Add address</a> --}}
                             </div>
                         </form>
                     </div>

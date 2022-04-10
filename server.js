@@ -8,7 +8,7 @@
 //#region Server Setup
 var express = require("express");
 var app = express();
-var HTTP_PORT = process.env.PORT || 8080;
+var HTTP_PORT = process.env.PORT || 8084;
 
 //body parser
 var bodyParser = require("body-parser");
@@ -219,7 +219,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/about", (req, res) => {
-  res.render("about", { 
+  res.render("about", {
     layout: false,
     user: req.session.user
   });
@@ -333,14 +333,120 @@ app.post("/register", (req, res) => {
   });
 });
 
-app.get("/shoppingCart", (req, res) => {
+app.get("/shoppingCart", async (req, res) => {
   if (req.cookies.productsAddedToCart) {
     console.log("productsAddedToCart", req.cookies.productsAddedToCart);
+    const frequency = (product_id) => {
+      let count = 0;
+      req.cookies.productsAddedToCart.forEach((element) => {
+        if (element.product_id == product_id) {
+          let qty = parseInt(element.quantity);
+          count = count + qty;
+        }
+      })
+      return count;
+    }
+    var cart = [];
+    let flag = true;
+    let subtotal = 0;
+    for (let i = 0; i < req.cookies.productsAddedToCart.length; i++) {
+      let data = await Product.findOne({
+        where: {
+          product_id: req.cookies.productsAddedToCart[i].product_id
+        },
+        raw: true,
+      })
+      if (cart.length == 0) {
+        data.count = frequency(data.product_id);
+        data.total = (data.count * data.unit_price).toFixed(2);
+        subtotal = subtotal + parseFloat(data.total);
+        // console.log('aaaaaaaaaa ' + data.product_id + "      " + data.count);
+        cart.push(data);
+
+      } else {
+        for (let i = 0; i < cart.length; i++) {
+          if (data.product_id == cart[i].product_id) {
+            flag = false;
+            break;
+          } else {
+            flag = true
+          }
+        }
+        if (flag) {
+          data.count = frequency(data.product_id);
+          data.total = (data.count * data.unit_price).toFixed(2);
+          subtotal = subtotal + parseFloat(data.total);
+          cart.push(data);
+        }
+      }
+    }
+    res.render("shoppingCart",
+      { layout: false, cartData: cart, subtotal: subtotal, user: req.session.user }
+    );
+
   } else {
     console.log("cart is empty");
+    res.render("shoppingCart",
+      { layout: false, cartData: cart }
+    );
   }
+});
 
-  res.render("shoppingCart", { layout: false });
+
+app.get("/product/delete/:prodID", (req, res) => {
+  if (req.cookies.productsAddedToCart) {
+    const frequency = (product_id) => {
+      let count = 0;
+      req.cookies.productsAddedToCart.forEach((element) => {
+        if (element.product_id == product_id) {
+          let qty = parseInt(element.quantity);
+          count = count + qty;
+        }
+      })
+      return count;
+    };
+    var cart = [];
+    let flag = true;
+    for (let i = 0; i < req.cookies.productsAddedToCart.length; i++) {
+      let data = {}
+      if (cart.length == 0) {
+        data.product_id = req.cookies.productsAddedToCart[i].product_id;
+        let quantity = frequency(req.cookies.productsAddedToCart[i].quantity);
+        data.quantity = quantity.toString();
+        cart.push(data);
+
+      } else {
+        for (let j = 0; j < cart.length; j++) {
+          if (req.cookies.productsAddedToCart[i].product_id == cart[j].product_id) {
+            flag = false;
+            break;
+          } else {
+            flag = true
+          };
+        };
+        if (flag) {
+          data.product_id = req.cookies.productsAddedToCart[i].product_id;
+          let quantity = frequency(req.cookies.productsAddedToCart[i].quantity);
+          data.quantity = quantity.toString();
+          cart.push(data);
+        };
+      };
+    };
+    //console.log("11111111111111111111111 " + cart);
+    let updatedCart = []
+    cart.forEach((element) => {
+      if (element.product_id != req.params.prodID) {
+        updatedCart.push(element)
+      };
+    });
+
+    //res.clearCookie('productsAddedToCart');
+    //res.send("shopping");
+    //console.log('Before setting cookie', req.cookies.productsAddedToCart);
+    res.cookie("productsAddedToCart", updatedCart, { secure: false, overwrite: true });
+    // console.log("After reseting");
+    // console.log(req.cookies.productsAddedToCart);
+  };
 });
 
 app.post("/addToCart", (req, res) => {
@@ -472,7 +578,7 @@ app.get("/dashboardUser", ensureLogin, (req, res) => {
     })
     .then((data) => {
       res.render("dashboardUser", {
-        layout: false,        
+        layout: false,
         finalData: {
           teaProducts,
           coffeeProducts: data
@@ -490,20 +596,82 @@ app.get("/profile", ensureLogin, (req, res) => {
   res.render("profile", { user: req.session.user, layout: false });
 });
 
-app.get("/shippingDetail", (req, res) => {
-  res.render("shippingDetail", { layout: false });
+app.get("/shippingDetail", ensureLogin, (req, res) => {
+
+  User.findOne({
+    where: {
+      email_id: req.session.user.email
+    }
+  }).then((data) => {
+    const firstName = data.first_name;
+    const lastName = data.last_name;
+    const address = (data.address);
+    var arraylist = address.split(",");
+
+    const address1 = arraylist[0];
+    const address2 = arraylist[1];
+    const city = arraylist[2];
+    const state = arraylist[3];
+
+    let shippingAddress = {
+      firstName,
+      lastName,
+      address1,
+      address2,
+      city,
+      state
+    };
+
+    res.render("shippingDetail", {
+      layout: false,
+      data1: shippingAddress,
+      user: req.session.user
+    }
+    );
+  });
+});
+
+app.post("/shippingDetail", ensureLogin, (req, res) => {
+  const inputFirstName = req.body.inputFirstName;
+  const inputLastName = req.body.inputLastName;
+  const inputAddress1 = req.body.inputAddress1;
+  const inputAddress2 = req.body.inputAddress2;
+  const inputCity = req.body.inputCity;
+  const inputState = req.body.inputState;
+  //const inputZip = req.body.inputZip;
+  let address = inputAddress1 + "," + inputAddress2 + "," + inputCity + "," + inputState;;
+  let shippingAddress = {
+    inputFirstName,
+    inputLastName,
+    inputAddress1,
+    inputAddress2,
+    inputCity,
+    inputState
+  };
+
+  User.update({
+    address: address
+  },
+    {
+      where: {
+        email_id: req.session.user.email
+      }
+    }).then(data => {
+
+      res.render("checkout", { shippingAddress: shippingAddress, layout: false });
+    });
 });
 
 app.get("/orders", (req, res) => {
-  res.render("orderHistory", { layout: false });
+  res.render("orderHistory", { layout: false, user: req.session.user });
 });
 
 app.get("/confirmOrder", (req, res) => {
-  res.render("confirmOrder", { layout: false });
+  res.render("confirmOrder", { layout: false, user: req.session.user });
 });
 
 app.get("/checkout", (req, res) => {
-  res.render("checkout", { layout: false });
+  res.render("checkout", { layout: false, user: req.session.user });
 });
 
 app.get("/editProfile", ensureLogin, (req, res) => {
@@ -931,7 +1099,7 @@ app.get("/search", (req, res) => {
       .catch((err) => {
         console.log("No Products found: " + err);
       });
-  }else {
+  } else {
     res.render("productSearch", {
       layout: false,
       finalData: {
