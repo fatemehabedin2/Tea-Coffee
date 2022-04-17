@@ -334,6 +334,7 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/shoppingCart", async (req, res) => {
+
   if (req.cookies.productsAddedToCart) {
     console.log("productsAddedToCart", req.cookies.productsAddedToCart);
     const frequency = (product_id) => {
@@ -360,7 +361,6 @@ app.get("/shoppingCart", async (req, res) => {
         data.count = frequency(data.product_id);
         data.total = (data.count * data.unit_price).toFixed(2);
         subtotal = subtotal + parseFloat(data.total);
-        // console.log('aaaaaaaaaa ' + data.product_id + "      " + data.count);
         cart.push(data);
 
       } else {
@@ -394,6 +394,7 @@ app.get("/shoppingCart", async (req, res) => {
 
 
 app.get("/product/delete/:prodID", (req, res) => {
+
   if (req.cookies.productsAddedToCart) {
     const frequency = (product_id) => {
       let count = 0;
@@ -426,13 +427,13 @@ app.get("/product/delete/:prodID", (req, res) => {
         };
         if (flag) {
           data.product_id = req.cookies.productsAddedToCart[i].product_id;
-          let quantity = frequency(req.cookies.productsAddedToCart[i].quantity);
+          let quantity = frequency(req.cookies.productsAddedToCart[i].product_id);
           data.quantity = quantity.toString();
           cart.push(data);
         };
       };
     };
-    //console.log("11111111111111111111111 " + cart);
+
     let updatedCart = []
     cart.forEach((element) => {
       if (element.product_id != req.params.prodID) {
@@ -440,13 +441,11 @@ app.get("/product/delete/:prodID", (req, res) => {
       };
     });
 
-    //res.clearCookie('productsAddedToCart');
-    //res.send("shopping");
-    //console.log('Before setting cookie', req.cookies.productsAddedToCart);
+    console.log("updated cart: ", updatedCart);
     res.cookie("productsAddedToCart", updatedCart, { secure: false, overwrite: true });
+    console.log("after deletion: ", res.cookie.productToBeAddedToCart);
     res.redirect("/shoppingCart");
-    // console.log("After reseting");
-    // console.log(req.cookies.productsAddedToCart);
+
   };
 });
 
