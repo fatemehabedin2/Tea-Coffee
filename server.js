@@ -8,7 +8,7 @@
 //#region Server Setup
 var express = require("express");
 var app = express();
-var HTTP_PORT = process.env.PORT || 8084;
+var HTTP_PORT = process.env.PORT || 8080;
 
 //body parser
 var bodyParser = require("body-parser");
